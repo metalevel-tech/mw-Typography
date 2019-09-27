@@ -39,7 +39,7 @@ The current repository redistributes [php-typography](https://github.com/mundsch
 
 ````bash
 cd $IP/extensions/mw-Typography
-sudo composer update            # sudo chown -R www-data ./ && sudo -u www-data composer update
+sudo composer update            # sudo chown -R www-data:www-data ./ && sudo -u www-data composer update
 php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.php
 ````
 
@@ -53,7 +53,7 @@ Navigate to `Special:Version` to check whether `mw-Typography` extension is enab
 
 ## Requirements
 
-Requirements tanscluded from [Code by Der Mundschenk & Cie. / wp-Typography](https://code.mundschenk.at/wp-typography/):
+Requirements transcluded from [Code by Der Mundschenk & Cie. /wp-Typography](https://code.mundschenk.at/wp-typography/):
 
 * The host server must run `PHP 5.6.0` **or later**,
 * The installation of PHP must include the [`mbstring`](https://www.php.net/manual/en/mbstring.installation.php) extension,
