@@ -24,12 +24,14 @@ Clone (download) the extension's repository in your MediaWiki `$IP/extensions` d
 
 ````bash
 cd $IP/extensions
+# Use HTTPS:
 git clone https://github.com/pa4080/mw-Typography.git
 ````
 
 For developers (which have enough rights and [ssh access](https://askubuntu.com/a/1097078/566421)):
 
 ````bash
+# Use SSH:
 git clone git@github.com:pa4080/mw-Typography.git
 ````
 
@@ -37,8 +39,8 @@ The current repository redistributes [php-typography](https://github.com/mundsch
 
 ````bash
 cd $IP/extensions/mw-Typography
-composer update
-php vendor/bin/update-iana.php
+sudo composer update            # sudo chown -R www-data ./ && sudo -u www-data composer update
+php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.php
 ````
 
 Finally enable the extension in `LocalSettings.php` of your MediaWiki instance:
