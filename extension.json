@@ -9,10 +9,7 @@
         "descriptionmsg": "typography-desc",
         "manifest_version": 1,
         "requires": {
-                "MediaWiki": ">= 1.30.0",
-                "skins": {
-                        "Vector": "*"
-                }
+                "MediaWiki": ">= 1.30.0"
         },
         "MessagesDirs": {
                 "PrivateWikiAccessControl": [
@@ -20,27 +17,21 @@
                 ]
         },
         "ResourceModules": {
-                "PrivateWikiAccessControlManager": {
-                        "scripts": "modules/PrivateWikiAccessControlManager.js",
-                        "styles": "modules/PrivateWikiAccessControlManager.css",
-                        "messages": [
-                                "pwac-menu-label",
-                                "pwac-menu-alt-private",
-                                "pwac-menu-alt-public"
-                        ]
+                "TypographyScriptsAndStyles": {
+                        "scripts": "modules/TypographyCleanClipboard.js",
+                        "styles": "modules/TypographyStyle.css"
                 }
         },
         "ResourceFileModulePaths": {
                 "localBasePath": "",
-                "remoteExtPath": "PrivateWikiAccessControl"
+                "remoteExtPath": "Typography"
         },
         "AutoloadClasses": {
-                "PrivateWikiAccessControl": "PrivateWikiAccessControl.body.php",
-                "PrivateWikiAccessControlHooks": "PrivateWikiAccessControl.hooks.php"
+                "PrivateWikiAccessControlHooks": "Typography.hooks.php"
         },
         "Hooks": {
-                "BeforePageDisplay": "PrivateWikiAccessControlHooks::onBeforePageDisplay",
-                "ResourceLoaderGetConfigVars": "PrivateWikiAccessControlHooks::onResourceLoaderGetConfigVars"
+                "ParserAfterTidy": "TypographyHooks::onParserAfterTidy",
+                "BeforePageDisplay": "MyExtensionHooks::onBeforePageDisplay"
         }
 }
 

@@ -186,16 +186,7 @@ class PrivateWikiAccessControlHooks {
         }
 
 
-        /**
-         * Add the JavaScript menu interface element
-        **/
-        $out->addLink( array(
-                'rel' => 'stylesheet',
-                'id' => 'FontAwesome',
-                'href' => 'https://use.fontawesome.com/releases/v5.8.2/css/all.css',
-                'integrity' => 'sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay',
-                'crossorigin' => 'anonymous',
-        ) );
+
 
         $out->addModules('PrivateWikiAccessControlManager');
 
@@ -205,14 +196,4 @@ class PrivateWikiAccessControlHooks {
         return true;
     }
 
-    public static function onResourceLoaderGetConfigVars( array &$vars ) {
-        global $wgPWAC;
-
-        // Forward some PHP variables to the JavaScript environment
-        $vars['wgPWAC'] = [
-            'WhitelistWalk' => $wgPWAC['WhitelistWalk']
-        ];
-
-        return true;
-    }
 }
