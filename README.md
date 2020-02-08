@@ -37,7 +37,7 @@ sudo git checkout the_desired_branch
 The current repository redistributes [php-typography](https://github.com/mundschenk-at/php-typography), if you want to [update](https://github.com/mundschenk-at/php-typography#installation) it, you can use Composer in this way:
 
 ````bash
-cd $IP/extensions/mw-Typography
+cd $IP/extensions/Typography
 sudo composer update            # sudo chown -R www-data:www-data ./ && sudo -u www-data composer update
 php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.php
 ````
@@ -45,7 +45,7 @@ php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.ph
 Finally enable the extension in `LocalSettings.php` of your MediaWiki instance:
 
 ````php
-require_once "$IP/extensions/mw-Typography/mw-Typography.php";
+require_once "$IP/extensions/Typography/mw-Typography.php";
 ````
 
 Navigate to `Special:Version` to check whether `mw-Typography` extension is enabled. It should work now.
