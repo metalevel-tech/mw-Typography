@@ -74,7 +74,7 @@ class TypographyHooks
         // Get the current NameSpace
         $theCurrentNamespace = $parser->getTitle()->getNamespace();
 
-	// Test whether the current NameSpace belongs to the Allowsed NameSpaces
+        // Test whether the current NameSpace belongs to the Allowsed NameSpaces
         if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
 
             // Load the main resources
