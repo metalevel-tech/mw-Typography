@@ -8,38 +8,19 @@
  * This file is a part of the MediaWiki Extension:Typography.
  *
  * This is the actual MediaWiki Extension:Typography.
- * The extension uses the repository https://github.com/mundschenk-at/php-typography will generate three files (by default) located in the '$IP/cache' directory - so it must be writable by 'www-data'.
-
-
+ * The extension uses the repository PHP-Typography (https://github.com/mundschenk-at/php-typography).
+ * The first aim is to provide Hyphenation, but all features of the repository PHP-Typography are available.
  *
- * Typography project is free software: you can redistribute it and/or
+ * This project is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- * PrivateWikiAccessControl project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * The project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
-**/
-
-
-/**
- * The mw-Typography extension is free software: you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The mw-Typography extension is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  *
  * Sources and References:
  * https://wordpress.org/plugins/wp-typography/			// the WP plugin that inspired me to start work on the current extension
@@ -75,7 +56,16 @@ $GLOBALS[ 'wgExtensionCredits' ][ 'other' ][ ] = array(
 	'license-name'   => 'GPL-3.0+',
 );
 
+if (!defined('MEDIAWIKI')) {
+    die('This file is an extension to MediaWiki and thus not a valid entry point.');
+} else {
+    global $IP;
+    global $wgServer;
+    global $wgPWAC;
 
+    $wgPWAC['IP']                 = (($wgPWAC['IP'])                 ? $wgPWAC['IP']                 : $IP);
+ 
+}
 
 // Set the NameSpaces on which the extension will operate
 global $mwTypographyAllowedNameSpaces;
