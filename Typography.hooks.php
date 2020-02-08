@@ -34,9 +34,9 @@
 if (!defined('MEDIAWIKI')) {
     die('This file is an extension to MediaWiki and thus not a valid entry point.');
 } else {
-    // Set the NameSpaces on which the extension will operate
     global $wgTypography;
 
+    // Set the NameSpaces on which the extension will operate
     if ($wgTypography['AllowedNameSpaces']) {
         $wgTypography['AllowedNameSpaces'] = $wgTypography['AllowedNameSpaces'];
     } else {
@@ -46,12 +46,11 @@ if (!defined('MEDIAWIKI')) {
     // Get the Language Code(s)
     // The list of the available languages and their codes: vendor/mundschenk-at/php-typography/src/lang
     global $wgLanguageCode;
-    global $mwHyphenationLanguage;
 
-    if ($wgLanguageCode == 'en') {
-        $mwHyphenationLanguage = 'en-US';
+    if (!$wgTypography['HyphenLanguage'] && $wgLanguageCode == 'en') {
+        $wgTypography['HyphenLanguage'] = 'en-US';
     } else {
-        $mwHyphenationLanguage = $wgLanguageCode;
+        $wgTypography['HyphenLanguage'] = $wgLanguageCode;
     }
 }
 
@@ -68,8 +67,6 @@ class TypographyHooks
      */
     public static function onParserAfterTidy( Parser &$parser, &$text ) 
     {
-
-        global $mwHyphenationLanguage;
         global $wgTypography;
 
         // Get the current NameSpace
@@ -137,7 +134,7 @@ class TypographyHooks
             // Hyphenation.
             $mwTypographySettings->set_hyphenation(true);
             //$mwTypographySettings->set_hyphenation_language('bg');
-            $mwTypographySettings->set_hyphenation_language($mwHyphenationLanguage);
+            $mwTypographySettings->set_hyphenation_language($wgTypography['HyphenLanguage']);
             $mwTypographySettings->set_min_length_hyphenation(4);
             $mwTypographySettings->set_min_before_hyphenation();
             $mwTypographySettings->set_min_after_hyphenation();
