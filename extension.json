@@ -31,7 +31,7 @@
         },
         "Hooks": {
                 "ParserAfterTidy": "TypographyHooks::onParserAfterTidy",
-                "BeforePageDisplay": "MyExtensionHooks::onBeforePageDisplay"
+                "BeforePageDisplay": "TypographyHooks::onBeforePageDisplay"
         }
 }
 
