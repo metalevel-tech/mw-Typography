@@ -35,47 +35,53 @@ if (!defined('MEDIAWIKI')) {
     die('This file is an extension to MediaWiki and thus not a valid entry point.');
 } else {
     // Set the NameSpaces on which the extension will operate
-    global $mwTypographyAllowedNameSpaces;
-    $mwTypographyAllowedNameSpaces = array('0', '1', '10', '11', '4', '5', '6', '7', '14', '15', '20', '21');
+    global $wgTypography;
+
+    if ($wgTypography['AllowedNameSpaces']) {
+        $wgTypography['AllowedNameSpaces'] = $wgTypography['AllowedNameSpaces'];
+    } else {
+        $wgTypography['AllowedNameSpaces'] = array('0', '1', '10', '11', '4', '5', '6', '7', '14', '15', '20', '21');
+    }
+
+    // Get the Language Code(s)
+    // The list of the available languages and their codes: vendor/mundschenk-at/php-typography/src/lang
+    global $wgLanguageCode;
+    global $mwHyphenationLanguage;
+
+    if ($wgLanguageCode == 'en') {
+        $mwHyphenationLanguage = 'en-US';
+    } else {
+        $mwHyphenationLanguage = $wgLanguageCode;
+    }
 }
+
 
 /**
  * This is the main Class of the extension
  * Ref: https://www.mediawiki.org/wiki/Manual:Hooks
  */
-
 class TypographyHooks
 {
     /**
      * This is the main function, the one that will process the content.
      * Ref: https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy
      */
+    public static function onParserAfterTidy( Parser &$parser, &$text ) {
 
-    public static function onParserAfterTidy(Parser &$parser, &$text)
-    { 
-        // Dial with the language codes
-        global $wgLanguageCode;
+        global $mwHyphenationLanguage;
+        global $wgTypography;
 
-        if ($wgLanguageCode == 'en') {
-            $mwHyphenationLanguage = 'en-US';
-        } else {
-            $mwHyphenationLanguage = $wgLanguageCode;
-        }
-
-        // Dial with the namespaces in use
-        global $mwTypographyAllowedNameSpaces;
+        // Get the current NameSpace
         $theCurrentNamespace = $parser->getTitle()->getNamespace();
 
-
-        if (in_array($theCurrentNamespace, $mwTypographyAllowedNameSpaces)) {
+	// Test whether the current NameSpace belongs to the Allowsed NameSpaces
+        if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
 
             // Load the main resources
             include_once __DIR__ . '/vendor/autoload.php';
 
-            /**
-             * Create a Settings object and Pass values for the settings
-             * For more information look at: vendor/mundschenk-at/php-typography/src/class-settings.php
-             */
+            // Create a Settings object and Pass values for the settings
+            // For more information: vendor/mundschenk-at/php-typography/src/class-settings.php
             $mwTypographySettings = new \PHP_Typography\Settings();
 
             // General attributes.
@@ -146,29 +152,26 @@ class TypographyHooks
             // Single character words /vendor/mundschenk-at/php-typography/src/class-settings.php:747
             $mwTypographySettings->set_single_character_word_spacing(false);
 
-            /**
-             * Process the content
-             */
+            // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
             $text = $mwTypographyTypo->process($text, $mwTypographySettings);
-
             return true;
         }
-
     }
+
 
     /**
      * Load the extension's Scripts And Styles
      * Ref: https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay
      */
-    public static function onBeforePageDisplay(OutputPage $out, Skin $skin) 
+    public static function onBeforePageDisplay(OutputPage $out, Skin $skin)
     {
-        global $mwTypographyAllowedNameSpaces;
+        global $wgTypography;
         $theCurrentNamespace = $out->getTitle()->getNamespace();
 
-        if (in_array($theCurrentNamespace, $mwTypographyAllowedNameSpaces)) {
+        if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
             $out->addModules('TypographyScriptsAndStyles');
             return true;
         }
-    } 
+    }
 }

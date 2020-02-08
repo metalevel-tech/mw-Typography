@@ -12,7 +12,7 @@
                 "MediaWiki": ">= 1.30.0"
         },
         "MessagesDirs": {
-                "PrivateWikiAccessControl": [
+                "Typography": [
                         "i18n"
                 ]
         },
@@ -27,7 +27,7 @@
                 "remoteExtPath": "Typography"
         },
         "AutoloadClasses": {
-                "PrivateWikiAccessControlHooks": "Typography.hooks.php"
+                "TypographyHooks": "Typography.hooks.php"
         },
         "Hooks": {
                 "ParserAfterTidy": "TypographyHooks::onParserAfterTidy",
