@@ -1,12 +1,32 @@
 <?php
 /**
- * The main file of the mw-Typography extension
+ * @author    Spas Z. Spasov <spas.z.spasov@gmail.com>
+ * @copyright 2020 Spas Z. Spasov
+ * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 (or later)
+ * @home      https://github.com/pa4080/mw-Typography
  *
- * @copyright (C) 2018 - 2019, Spas Z. Spasov
- * @author Spas Z. Spasov <spas.z.spasov@gmail.com>
- * @license https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 (or later)
+ * This file is a part of the MediaWiki Extension:Typography.
  *
- * This file is part of the MediaWiki extension mw-Typography.
+ * This is the actual MediaWiki Extension:Typography.
+ * The extension uses the repository https://github.com/mundschenk-at/php-typography will generate three files (by default) located in the '$IP/cache' directory - so it must be writable by 'www-data'.
+
+
+ *
+ * Typography project is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * PrivateWikiAccessControl project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+**/
+
+
+/**
  * The mw-Typography extension is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
