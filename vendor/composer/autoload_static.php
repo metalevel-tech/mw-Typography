@@ -36,6 +36,7 @@ class ComposerStaticInitb5855f33306f16a38adc3a9a108d20bb
         'PHP_Typography\\Fixes\\Node_Fixes\\Simple_Regex_Replacement_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-simple-regex-replacement-fix.php',
         'PHP_Typography\\Fixes\\Node_Fixes\\Simple_Style_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-simple-style-fix.php',
         'PHP_Typography\\Fixes\\Node_Fixes\\Single_Character_Word_Spacing_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-single-character-word-spacing-fix.php',
+        'PHP_Typography\\Fixes\\Node_Fixes\\Smart_Area_Units_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-smart-area-units-fix.php',
         'PHP_Typography\\Fixes\\Node_Fixes\\Smart_Dashes_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-smart-dashes-fix.php',
         'PHP_Typography\\Fixes\\Node_Fixes\\Smart_Diacritics_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-smart-diacritics-fix.php',
         'PHP_Typography\\Fixes\\Node_Fixes\\Smart_Ellipses_Fix' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/fixes/node-fixes/class-smart-ellipses-fix.php',

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,14 +28,13 @@ use PHP_Typography\Fixes\Node_Fixes;
 use PHP_Typography\Settings;
 
 /**
- * Unit_Spacing_Fix unit test.
+ * Smart_Area_Units_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Area_Units_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Area_Units_Fix
  *
  * @uses ::__construct
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
- * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::__construct
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
@@ -44,7 +43,7 @@ use PHP_Typography\Settings;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  */
-class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
+class Smart_Area_Units_Fix_Test extends Node_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -53,30 +52,23 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	protected function setUp() {
 		parent::setUp();
 
-		$this->fix = new Node_Fixes\Unit_Spacing_Fix();
+		$this->fix = new Node_Fixes\Smart_Area_Units_Fix();
 	}
 
 	/**
-	 * Provide data for testing unit_spacing.
+	 * Providate data for testing smart exponents.
 	 *
 	 * @return array
 	 */
-	public function provide_unit_spacing_data() {
+	public function provide_smart_area_and_volume_units_data() {
 		return [
-			[ 'It was 2 m from', 'It was 2&#8239;m from' ],
-			[ '3 km/h', '3&#8239;km/h' ],
-			[ '5 sg 44 kg', '5 sg 44&#8239;kg' ],
-			[ '100 &deg;C', '100&#8239;&deg;C' ],
-			[ '10 &euro;', '10&#8239;&euro;' ],
-			[ '10 €', '10&#8239;&euro;' ],
-			[ '1 ¢', '1&#8239;&cent;' ],
-			[ '1 $', '1&#8239;$' ],
-			[ '5 nanoamperes', '5&#8239;nanoamperes' ],
-			[ '1 Ω', '1&#8239;&Omega;' ],
-			[ '1 &Omega;', '1&#8239;&Omega;' ],
-			[ '10 m2', '10&#8239;m2' ],
-			[ '10 m²', '10&#8239;m²' ],
-			[ '5 m³', '5&#8239;m³' ],
+			[ '10 m2', '10 m²' ],
+			[ '5.3 m3', '5.3 m³' ],
+			[ '10 cm2', '10 cm²' ],
+			[ '10,20 mm2', '10,20 mm²' ],
+			[ '5 m2, das ergibt 5000000mm2', '5 m², das ergibt 5000000 mm²' ],
+			[ '3 µm2', '3 µm²' ],
+			[ '2m2', '2 m²' ],
 		];
 	}
 
@@ -84,18 +76,14 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
-	 * @covers ::__construct
 	 *
-	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
-	 *
-	 * @dataProvider provide_unit_spacing_data
+	 * @dataProvider provide_smart_area_and_volume_units_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->s->set_unit_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->set_smart_area_units( true );
 
 		$this->assertFixResultSame( $input, $result );
 	}
@@ -104,18 +92,14 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
-	 * @covers ::__construct
 	 *
-	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
-	 *
-	 * @dataProvider provide_unit_spacing_data
+	 * @dataProvider provide_smart_area_and_volume_units_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->s->set_unit_spacing( false );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->set_smart_area_units( false );
 
 		$this->assertFixResultSame( $input, $input );
 	}

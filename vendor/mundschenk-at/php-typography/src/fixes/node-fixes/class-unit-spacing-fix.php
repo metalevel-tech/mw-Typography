@@ -40,7 +40,6 @@ use PHP_Typography\U;
  */
 class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
-	const SETTING     = 'unitSpacing';
 	const REPLACEMENT = '$1' . U::NO_BREAK_NARROW_SPACE . '$2';
 	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
@@ -81,7 +80,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 * @param bool $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $feed_compatible = false ) {
-		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
+		parent::__construct( self::REGEX, self::REPLACEMENT, Settings::UNIT_SPACING, $feed_compatible );
 	}
 
 	/**
@@ -92,9 +91,6 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		// Update replacement with current non-breaking narrow space.
-		$this->replacement = "\$1{$settings->no_break_narrow_space()}\$2";
-
 		// Update regex with custom units.
 		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 

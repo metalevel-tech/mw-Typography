@@ -52,7 +52,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	const DOUBLE_QUOTED_NUMBERS = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/S';
 	const COMMA_QUOTE           = '/(?<=\s|\A),(?=\S)/S';
 	const APOSTROPHE_WORDS      = "/(?<=\w)'(?=\w)/S";
-	const APOSTROPHE_DECADES    = "/'(\d\d\b)/S";
+	const APOSTROPHE_DECADES    = "/'(\d\d(s|er)?\b)/S"; // Allow both English '80s and German '80er.
 	const SINGLE_QUOTE_OPEN     = "/(?: '(?=\w) )  | (?: (?<=\s|\A)'(?=\S) )/Sx"; // Alternative is for expressions like _'¿hola?'_.
 	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/Sx";
 	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/Sx';
@@ -94,7 +94,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartQuotes'] ) ) {
+		if ( empty( $settings[ Settings::SMART_QUOTES ] ) ) {
 			return;
 		}
 
@@ -122,7 +122,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Handle excpetions first.
-		$node_data = \str_replace( $settings['smartQuotesExceptions']['patterns'], $settings['smartQuotesExceptions']['replacements'], $node_data );
+		if ( ! empty( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ] ) ) {
+			$node_data = \str_replace( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['patterns'], $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['replacements'], $node_data );
+		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
 		$node_data = \preg_replace(
@@ -192,10 +194,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( [ "'", '"' ], [ $single_close, $double_close ], $node_data );
 
 		// Add a thin non-breaking space between secondary and primary quotes.
-		$no_break  = $settings->no_break_narrow_space();
 		$node_data = \str_replace(
 			[ "{$double_open}{$single_open}", "{$single_close}{$double_close}" ],
-			[ "{$double_open}{$no_break}{$single_open}", "{$single_close}{$no_break}{$double_close}" ],
+			[ $double_open . U::NO_BREAK_NARROW_SPACE . $single_open, $single_close . U::NO_BREAK_NARROW_SPACE . $double_close ],
 			$node_data
 		);
 

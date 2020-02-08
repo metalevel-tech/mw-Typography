@@ -161,13 +161,21 @@ class PHP_Typography {
 		$dom = $this->parse_html( $html5_parser, $html, $settings, $body_classes );
 
 		// Abort if there were parsing errors.
-		if ( empty( $dom ) ) {
+		if ( ! $dom instanceof \DOMDocument || ! $dom->hasChildNodes() ) {
 			return $html;
 		}
 
 		// Query some nodes in the DOM.
-		$xpath          = new \DOMXPath( $dom );
-		$body_node      = $xpath->query( '/html/body' )->item( 0 );
+		$xpath     = new \DOMXPath( $dom );
+		$body_node = $xpath->query( '/html/body' )->item( 0 );
+
+		// Abort if we could not retrieve the body node.
+		// This should be refactored to use exceptions in a future version.
+		if ( ! $body_node instanceof \DOMNode ) {
+			return $html;
+		}
+
+		// Get the list of tags that should be ignored.
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
@@ -192,7 +200,7 @@ class PHP_Typography {
 
 			// Replace original node (if anthing was changed).
 			if ( $new !== $original ) {
-				$this->replace_node_with_html( $textnode, $new );
+				$this->replace_node_with_html( $textnode, $settings->apply_character_mapping( $new ) );
 			}
 		}
 
@@ -250,12 +258,12 @@ class PHP_Typography {
 
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $settings['parserErrorsHandler'] ) && ! empty( $errors ) ) {
-			$errors = $settings['parserErrorsHandler']( $errors );
+		if ( ! empty( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && ! empty( $errors ) ) {
+			$errors = $settings[ Settings::PARSER_ERRORS_HANDLER ]( $errors );
 		}
 
 		// Return null if there are still unhandled parsing errors.
-		if ( ! empty( $errors ) && ! $settings['parserErrorsIgnore'] ) {
+		if ( ! empty( $errors ) && ! $settings[ Settings::PARSER_ERRORS_IGNORE ] ) {
 			$dom = null;
 		}
 

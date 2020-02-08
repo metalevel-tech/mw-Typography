@@ -37,11 +37,79 @@ use PHP_Typography\Settings\Quotes;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 4.0.0
+ * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  */
 class Settings implements \ArrayAccess, \JsonSerializable {
 
+	// General attributes.
+	const IGNORE_TAGS    = 'ignoreTags';
+	const IGNORE_CLASSES = 'ignoreClasses';
+	const IGNORE_IDS     = 'ignoreIDs';
+
+	// Smart characters.
+	const SMART_QUOTES                        = 'smartQuotes';
+	const SMART_QUOTES_EXCEPTIONS             = 'smartQuotesExceptions';
+	const SMART_DASHES                        = 'smartDashes';
+	const SMART_ELLIPSES                      = 'smartEllipses';
+	const SMART_DIACRITICS                    = 'smartDiacritics';
+	const DIACRITIC_LANGUAGE                  = 'diacriticLanguage';
+	const DIACRITIC_WORDS                     = 'diacriticWords';
+	const DIACRITIC_REPLACEMENT_DATA          = 'diacriticReplacement';
+	const DIACRITIC_CUSTOM_REPLACEMENTS       = 'diacriticCustomReplacements';
+	const SMART_MARKS                         = 'smartMarks';
+	const SMART_ORDINAL_SUFFIX                = 'smartOrdinalSuffix';
+	const SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS = 'smartOrdinalSuffixRomanNumerals';
+	const SMART_MATH                          = 'smartMath';
+	const SMART_FRACTIONS                     = 'smartFractions';
+	const SMART_EXPONENTS                     = 'smartExponents';
+	const SMART_AREA_UNITS                    = 'smartAreaVolumeUnits';
+
+	// Smart spacing.
+	const SINGLE_CHARACTER_WORD_SPACING = 'singleCharacterWordSpacing';
+	const FRACTION_SPACING              = 'fractionSpacing';
+	const UNIT_SPACING                  = 'unitSpacing';
+	const UNITS                         = 'units';
+	const NUMBERED_ABBREVIATION_SPACING = 'numberedAbbreviationSpacing';
+	const FRENCH_PUNCTUATION_SPACING    = 'frenchPunctuationSpacing';
+	const DASH_SPACING                  = 'dashSpacing';
+	const DEWIDOW                       = 'dewidow';
+	const DEWIDOW_MAX_LENGTH            = 'dewidowMaxLength';
+	const DEWIDOW_MAX_PULL              = 'dewidowMaxPull';
+	const DEWIDOW_WORD_NUMBER           = 'dewidowWordNumber';
+	const HYPHEN_HARD_WRAP              = 'hyphenHardWrap';
+	const URL_WRAP                      = 'urlWrap';
+	const URL_MIN_AFTER_WRAP            = 'urlMinAfterWrap';
+	const EMAIL_WRAP                    = 'emailWrap';
+	const SPACE_COLLAPSE                = 'spaceCollapse';
+
+	// Character styling.
+	const STYLE_AMPERSANDS          = 'styleAmpersands';
+	const STYLE_CAPS                = 'styleCaps';
+	const STYLE_INITIAL_QUOTES      = 'styleInitialQuotes';
+	const INITIAL_QUOTE_TAGS        = 'initialQuoteTags';
+	const STYLE_NUMBERS             = 'styleNumbers';
+	const STYLE_HANGING_PUNCTUATION = 'styleHangingPunctuation';
+
+	// Hyphenation.
+	const HYPHENATION                   = 'hyphenation';
+	const HYPHENATION_LANGUAGE          = 'hyphenLanguage';
+	const HYPHENATION_MIN_LENGTH        = 'hyphenMinLength';
+	const HYPHENATION_MIN_BEFORE        = 'hyphenMinBefore';
+	const HYPHENATION_MIN_AFTER         = 'hyphenMinAfter';
+	const HYPHENATION_CUSTOM_EXCEPTIONS = 'hyphenationCustomExceptions';
+	const HYPHENATE_HEADINGS            = 'hyphenateTitle';
+	const HYPHENATE_ALL_CAPS            = 'hyphenateAllCaps';
+	const HYPHENATE_TITLE_CASE          = 'hyphenateTitleCase';
+	const HYPHENATE_COMPOUNDS           = 'hyphenateCompounds';
+
+	// Parser error handling.
+	const PARSER_ERRORS_IGNORE  = 'parserErrorsIgnore';
+	const PARSER_ERRORS_HANDLER = 'parserErrorsHandler';
+
 	/**
 	 * The current no-break narrow space character.
+	 *
+	 * @deprecated 6.5.0
 	 *
 	 * @var string
 	 */
@@ -83,18 +151,48 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	protected $dash_style;
 
 	/**
+	 * The Unicode character mapping (some characters still have compatibility issues).
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var string[]
+	 */
+	protected $unicode_mapping;
+
+	/**
+	 * An array containing just remapped characters (for optimization).
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var string[]
+	 */
+	protected $remapped_characters;
+
+	/**
 	 * Sets up a new Settings object.
 	 *
 	 * @since 6.0.0 If $set_defaults is `false`, the settings object is not fully
 	 *              initialized unless `set_smart_quotes_primary`,
 	 *              `set_smart_quotes_secondary`, `set_smart_dashes_style` and
 	 *              `set_true_no_break_narrow_space` are called explicitly.
+	 * @since 6.5.0 A (partial) character mapping can be given to remap certain
+	 *              characters.
 	 *
-	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
+	 * @param bool     $set_defaults Optional. If true, set default values for various properties. Default true.
+	 * @param string[] $mapping      Optional. Unicode characters to remap. The default maps the narrow no-break space to the normal NO-BREAK SPACE and the apostrophe to the RIGHT SINGLE QUOTATION MARK.
 	 */
-	public function __construct( $set_defaults = true ) {
+	public function __construct( $set_defaults = true, array $mapping = [ U::NO_BREAK_NARROW_SPACE => U::NO_BREAK_SPACE, U::APOSTROPHE => U::SINGLE_QUOTE_CLOSE ] ) { // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing
 		if ( $set_defaults ) {
 			$this->set_defaults();
+		}
+
+		// Merge default character mapping with given mapping.
+		$this->unicode_mapping = $mapping;
+
+		// Keep backwards compatibility.
+		if ( isset( $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ] ) ) {
+			/* @scrutinizer ignore-deprecated */
+			$this->no_break_narrow_space = $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ];
 		}
 	}
 
@@ -187,7 +285,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		return \array_merge(
 			$this->data,
 			[
-				'no_break_narrow_space' => $this->no_break_narrow_space,
+				'unicode_mapping'       => $this->unicode_mapping,
 				'primary_quotes'        => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
 				'secondary_quotes'      => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
 				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
@@ -197,13 +295,63 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
+	 * Remaps a unicode character to another one.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param  string $char     The remapped character.
+	 * @param  string $new_char The character to actually use.
+	 */
+	public function remap_character( $char, $new_char ) {
+		if ( $char !== $new_char ) {
+			$this->unicode_mapping[ $char ] = $new_char;
+		} else {
+			unset( $this->unicode_mapping[ $char ] );
+		}
+
+		// Compatibility with the old way of setting the no-break narrow space.
+		if ( U::NO_BREAK_NARROW_SPACE === $char ) {
+			/* @scrutinizer ignore-deprecated */
+			$this->no_break_narrow_space = $new_char;
+		}
+	}
+
+	/**
+	 * Remaps one or more strings.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param  string|string[] $input The input string(s).
+	 *
+	 * @return string|string[]
+	 */
+	public function apply_character_mapping( $input ) {
+
+		// Nothing for us to do.
+		if ( empty( $input ) || empty( $this->unicode_mapping ) ) {
+			return $input;
+		}
+
+		$native_array = \is_array( $input );
+		$data         = (array) $input;
+
+		foreach ( $data as $key => $string ) {
+			$data[ $key ] = \strtr( $string, $this->unicode_mapping );
+		}
+
+		return $native_array ? $data : $data[0];
+	}
+
+	/**
 	 * Retrieves the current non-breaking narrow space character (either the
 	 * regular non-breaking space &nbsp; or the the true non-breaking narrow space &#8239;).
+	 *
+	 * @deprecated 6.5.0 Use U::NO_BREAK_NARROW_SPACE instead and let Settings::apply_character_mapping() do the rest.
 	 *
 	 * @return string
 	 */
 	public function no_break_narrow_space() {
-		return $this->no_break_narrow_space;
+		return /* @scrutinizer ignore-deprecated */$this->no_break_narrow_space;
 	}
 
 	/**
@@ -268,6 +416,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_smart_math();
 		$this->set_smart_fractions();
 		$this->set_smart_exponents();
+		$this->set_smart_area_units();
 
 		// Smart spacing.
 		$this->set_single_character_word_spacing();
@@ -285,6 +434,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_email_wrap();
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
+		/* @scrutinizer ignore-deprecated */
 		$this->set_true_no_break_narrow_space();
 
 		// Character styling.
@@ -317,7 +467,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default false.
 	 */
 	public function set_ignore_parser_errors( $on = false ) {
-		$this->data['parserErrorsIgnore'] = $on;
+		$this->data[ self::PARSER_ERRORS_IGNORE ] = $on;
 	}
 
 	/**
@@ -328,20 +478,22 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
 	public function set_parser_errors_handler( callable $handler = null ) {
-		$this->data['parserErrorsHandler'] = $handler;
+		$this->data[ self::PARSER_ERRORS_HANDLER ] = $handler;
 	}
 
 	/**
 	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
+	 *
+	 * @deprecated 6.5.0 Use ::remap_character() instead.
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
 	public function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
-			$this->no_break_narrow_space = U::NO_BREAK_NARROW_SPACE;
+			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 		} else {
-			$this->no_break_narrow_space = U::NO_BREAK_SPACE;
+			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_SPACE );
 		}
 	}
 
@@ -354,7 +506,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		// Ensure that we pass only lower-case tag names to XPath.
 		$tags = array_filter( array_map( 'strtolower', Strings::maybe_split_parameters( $tags ) ), 'ctype_alnum' );
 
-		$this->data['ignoreTags'] = array_unique( array_merge( $tags, array_flip( DOM::inappropriate_tags() ) ) );
+		$this->data[ self::IGNORE_TAGS ] = array_unique( array_merge( $tags, array_flip( DOM::inappropriate_tags() ) ) );
 	}
 
 	/**
@@ -363,7 +515,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string|array $classes A comma separated list or an array of class names.
 	 */
 	public function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
-		$this->data['ignoreClasses'] = Strings::maybe_split_parameters( $classes );
+		$this->data[ self::IGNORE_CLASSES ] = Strings::maybe_split_parameters( $classes );
 	}
 
 	/**
@@ -372,7 +524,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string|array $ids A comma separated list or an array of tag names.
 	 */
 	public function set_ids_to_ignore( $ids = [] ) {
-		$this->data['ignoreIDs'] = Strings::maybe_split_parameters( $ids );
+		$this->data[ self::IGNORE_IDS ] = Strings::maybe_split_parameters( $ids );
 	}
 
 	/**
@@ -381,7 +533,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_quotes( $on = true ) {
-		$this->data['smartQuotes'] = $on;
+		$this->data[ self::SMART_QUOTES ] = $on;
 	}
 
 	/**
@@ -473,7 +625,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		"'splainin" => U::APOSTROPHE . 'splainin',
 		"'em'"      => U::APOSTROPHE . 'em',
 	] ) {
-		$this->data['smartQuotesExceptions'] = [
+		$this->data[ self::SMART_QUOTES_EXCEPTIONS ] = [
 			'patterns'     => \array_keys( $exceptions ),
 			'replacements' => \array_values( $exceptions ),
 		];
@@ -511,7 +663,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_dashes( $on = true ) {
-		$this->data['smartDashes'] = $on;
+		$this->data[ self::SMART_DASHES ] = $on;
 	}
 
 	/**
@@ -535,7 +687,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_ellipses( $on = true ) {
-		$this->data['smartEllipses'] = $on;
+		$this->data[ self::SMART_ELLIPSES ] = $on;
 	}
 
 	/**
@@ -544,7 +696,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_diacritics( $on = true ) {
-		$this->data['smartDiacritics'] = $on;
+		$this->data[ self::SMART_DIACRITICS ] = $on;
 	}
 
 	/**
@@ -553,18 +705,18 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string $lang Has to correspond to a filename in 'diacritics'. Optional. Default 'en-US'.
 	 */
 	public function set_diacritic_language( $lang = 'en-US' ) {
-		if ( isset( $this->data['diacriticLanguage'] ) && $this->data['diacriticLanguage'] === $lang ) {
+		if ( isset( $this->data[ self::DIACRITIC_LANGUAGE ] ) && $this->data[ self::DIACRITIC_LANGUAGE ] === $lang ) {
 			return;
 		}
 
-		$this->data['diacriticLanguage'] = $lang;
-		$language_file_name              = \dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
+		$this->data[ self::DIACRITIC_LANGUAGE ] = $lang;
+		$language_file_name                     = \dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
 
 		if ( \file_exists( $language_file_name ) ) {
-			$diacritics_file              = \json_decode( \file_get_contents( $language_file_name ), true );
-			$this->data['diacriticWords'] = $diacritics_file['diacritic_words'];
+			$diacritics_file                     = \json_decode( \file_get_contents( $language_file_name ), true );
+			$this->data[ self::DIACRITIC_WORDS ] = $diacritics_file['diacritic_words'];
 		} else {
-			unset( $this->data['diacriticWords'] );
+			unset( $this->data[ self::DIACRITIC_WORDS ] );
 		}
 
 		$this->update_diacritics_replacement_arrays();
@@ -581,7 +733,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$this->data['diacriticCustomReplacements'] = self::array_map_assoc(
+		$this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] = self::array_map_assoc(
 			function( $key, $replacement ) {
 				$key         = \strip_tags( \trim( $key ) );
 				$replacement = \strip_tags( \trim( $replacement ) );
@@ -659,14 +811,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$patterns     = [];
 		$replacements = [];
 
-		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
-			$this->parse_diacritics_rules( $this->data['diacriticCustomReplacements'], $patterns, $replacements );
+		if ( ! empty( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] ) ) {
+			$this->parse_diacritics_rules( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ], $patterns, $replacements );
 		}
-		if ( ! empty( $this->data['diacriticWords'] ) ) {
-			$this->parse_diacritics_rules( $this->data['diacriticWords'], $patterns, $replacements );
+		if ( ! empty( $this->data[ self::DIACRITIC_WORDS ] ) ) {
+			$this->parse_diacritics_rules( $this->data[ self::DIACRITIC_WORDS ], $patterns, $replacements );
 		}
 
-		$this->data['diacriticReplacement'] = [
+		$this->data[ self::DIACRITIC_REPLACEMENT_DATA ] = [
 			'patterns'     => $patterns,
 			'replacements' => $replacements,
 		];
@@ -693,7 +845,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_marks( $on = true ) {
-		$this->data['smartMarks'] = $on;
+		$this->data[ self::SMART_MARKS ] = $on;
 	}
 
 	/**
@@ -702,7 +854,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_math( $on = true ) {
-		$this->data['smartMath'] = $on;
+		$this->data[ self::SMART_MATH ] = $on;
 	}
 
 	/**
@@ -711,7 +863,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_exponents( $on = true ) {
-		$this->data['smartExponents'] = $on;
+		$this->data[ self::SMART_EXPONENTS ] = $on;
 	}
 
 	/**
@@ -720,7 +872,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_fractions( $on = true ) {
-		$this->data['smartFractions'] = $on;
+		$this->data[ self::SMART_FRACTIONS ] = $on;
 	}
 
 	/**
@@ -729,7 +881,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_smart_ordinal_suffix( $on = true ) {
-		$this->data['smartOrdinalSuffix'] = $on;
+		$this->data[ self::SMART_ORDINAL_SUFFIX ] = $on;
 	}
 
 	/**
@@ -740,7 +892,16 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default false.
 	 */
 	public function set_smart_ordinal_suffix_match_roman_numerals( $on = false ) {
-		$this->data['smartOrdinalSuffixRomanNumerals'] = $on;
+		$this->data[ self::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] = $on;
+	}
+
+	/**
+	 * Enables/disables replacement of m2 with m³ and m3 with m³.
+	 *
+	 * @param bool $on Optional. Default true.
+	 */
+	public function set_smart_area_units( $on = true ) {
+		$this->data[ self::SMART_AREA_UNITS ] = $on;
 	}
 
 	/**
@@ -749,7 +910,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_single_character_word_spacing( $on = true ) {
-		$this->data['singleCharacterWordSpacing'] = $on;
+		$this->data[ self::SINGLE_CHARACTER_WORD_SPACING ] = $on;
 	}
 
 	/**
@@ -758,7 +919,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_fraction_spacing( $on = true ) {
-		$this->data['fractionSpacing'] = $on;
+		$this->data[ self::FRACTION_SPACING ] = $on;
 	}
 
 	/**
@@ -767,7 +928,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_unit_spacing( $on = true ) {
-		$this->data['unitSpacing'] = $on;
+		$this->data[ self::UNIT_SPACING ] = $on;
 	}
 
 	/**
@@ -776,7 +937,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_numbered_abbreviation_spacing( $on = true ) {
-		$this->data['numberedAbbreviationSpacing'] = $on;
+		$this->data[ self::NUMBERED_ABBREVIATION_SPACING ] = $on;
 	}
 
 	/**
@@ -787,7 +948,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default false.
 	 */
 	public function set_french_punctuation_spacing( $on = false ) {
-		$this->data['frenchPunctuationSpacing'] = $on;
+		$this->data[ self::FRENCH_PUNCTUATION_SPACING ] = $on;
 	}
 
 	/**
@@ -796,8 +957,8 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string|array $units A comma separated list or an array of units.
 	 */
 	public function set_units( $units = [] ) {
-		$this->data['units'] = Strings::maybe_split_parameters( $units );
-		$this->custom_units  = $this->update_unit_pattern( $this->data['units'] );
+		$this->data[ self::UNITS ] = Strings::maybe_split_parameters( $units );
+		$this->custom_units        = $this->update_unit_pattern( $this->data[ self::UNITS ] );
 	}
 
 	/**
@@ -827,7 +988,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_dash_spacing( $on = true ) {
-		$this->data['dashSpacing'] = $on;
+		$this->data[ self::DASH_SPACING ] = $on;
 	}
 
 	/**
@@ -836,7 +997,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_space_collapse( $on = true ) {
-		$this->data['spaceCollapse'] = $on;
+		$this->data[ self::SPACE_COLLAPSE ] = $on;
 	}
 
 	/**
@@ -845,7 +1006,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_dewidow( $on = true ) {
-		$this->data['dewidow'] = $on;
+		$this->data[ self::DEWIDOW ] = $on;
 	}
 
 	/**
@@ -856,7 +1017,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_max_dewidow_length( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->data['dewidowMaxLength'] = $length;
+		$this->data[ self::DEWIDOW_MAX_LENGTH ] = $length;
 	}
 
 	/**
@@ -867,7 +1028,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_dewidow_word_number( $number = 1 ) {
 		$number = ( $number > 3 || $number < 1 ) ? 1 : $number;
 
-		$this->data['dewidowWordNumber'] = $number;
+		$this->data[ self::DEWIDOW_WORD_NUMBER ] = $number;
 	}
 
 	/**
@@ -878,7 +1039,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_max_dewidow_pull( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->data['dewidowMaxPull'] = $length;
+		$this->data[ self::DEWIDOW_MAX_PULL ] = $length;
 	}
 
 	/**
@@ -887,7 +1048,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_wrap_hard_hyphens( $on = true ) {
-		$this->data['hyphenHardWrap'] = $on;
+		$this->data[ self::HYPHEN_HARD_WRAP ] = $on;
 	}
 
 	/**
@@ -896,7 +1057,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_url_wrap( $on = true ) {
-		$this->data['urlWrap'] = $on;
+		$this->data[ self::URL_WRAP ] = $on;
 	}
 
 	/**
@@ -905,7 +1066,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_email_wrap( $on = true ) {
-		$this->data['emailWrap'] = $on;
+		$this->data[ self::EMAIL_WRAP ] = $on;
 	}
 
 	/**
@@ -916,7 +1077,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_min_after_url_wrap( $length = 5 ) {
 		$length = ( $length > 0 ) ? $length : 5;
 
-		$this->data['urlMinAfterWrap'] = $length;
+		$this->data[ self::URL_MIN_AFTER_WRAP ] = $length;
 	}
 
 	/**
@@ -925,7 +1086,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_style_ampersands( $on = true ) {
-		$this->data['styleAmpersands'] = $on;
+		$this->data[ self::STYLE_AMPERSANDS ] = $on;
 	}
 
 	/**
@@ -934,7 +1095,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_style_caps( $on = true ) {
-		$this->data['styleCaps'] = $on;
+		$this->data[ self::STYLE_CAPS ] = $on;
 	}
 
 	/**
@@ -943,7 +1104,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_style_initial_quotes( $on = true ) {
-		$this->data['styleInitialQuotes'] = $on;
+		$this->data[ self::STYLE_INITIAL_QUOTES ] = $on;
 	}
 
 	/**
@@ -952,7 +1113,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_style_numbers( $on = true ) {
-		$this->data['styleNumbers'] = $on;
+		$this->data[ self::STYLE_NUMBERS ] = $on;
 	}
 
 	/**
@@ -961,7 +1122,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_style_hanging_punctuation( $on = true ) {
-		$this->data['styleHangingPunctuation'] = $on;
+		$this->data[ self::STYLE_HANGING_PUNCTUATION ] = $on;
 	}
 
 	/**
@@ -976,7 +1137,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
-		$this->data['initialQuoteTags'] = \array_change_key_case( \array_flip( /** Array. @scrutinizer ignore-type */ $tags ), CASE_LOWER );
+		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( /** Array. @scrutinizer ignore-type */ $tags ), CASE_LOWER );
 	}
 
 	/**
@@ -985,7 +1146,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_hyphenation( $on = true ) {
-		$this->data['hyphenation'] = $on;
+		$this->data[ self::HYPHENATION ] = $on;
 	}
 
 	/**
@@ -994,11 +1155,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
 	 */
 	public function set_hyphenation_language( $lang = 'en-US' ) {
-		if ( isset( $this->data['hyphenLanguage'] ) && $this->data['hyphenLanguage'] === $lang ) {
+		if ( isset( $this->data[ self::HYPHENATION_LANGUAGE ] ) && $this->data[ self::HYPHENATION_LANGUAGE ] === $lang ) {
 			return; // Bail out, no need to do anything.
 		}
 
-		$this->data['hyphenLanguage'] = $lang;
+		$this->data[ self::HYPHENATION_LANGUAGE ] = $lang;
 	}
 
 	/**
@@ -1009,7 +1170,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_min_length_hyphenation( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->data['hyphenMinLength'] = $length;
+		$this->data[ self::HYPHENATION_MIN_LENGTH ] = $length;
 	}
 
 	/**
@@ -1020,7 +1181,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_min_before_hyphenation( $length = 3 ) {
 		$length = ( $length > 0 ) ? $length : 3;
 
-		$this->data['hyphenMinBefore'] = $length;
+		$this->data[ self::HYPHENATION_MIN_BEFORE ] = $length;
 	}
 
 	/**
@@ -1031,7 +1192,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_min_after_hyphenation( $length = 2 ) {
 		$length = ( $length > 0 ) ? $length : 2;
 
-		$this->data['hyphenMinAfter'] = $length;
+		$this->data[ self::HYPHENATION_MIN_AFTER ] = $length;
 	}
 
 	/**
@@ -1040,7 +1201,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_hyphenate_headings( $on = true ) {
-		$this->data['hyphenateTitle'] = $on;
+		$this->data[ self::HYPHENATE_HEADINGS ] = $on;
 	}
 
 	/**
@@ -1049,7 +1210,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_hyphenate_all_caps( $on = true ) {
-		$this->data['hyphenateAllCaps'] = $on;
+		$this->data[ self::HYPHENATE_ALL_CAPS ] = $on;
 	}
 
 	/**
@@ -1058,7 +1219,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_hyphenate_title_case( $on = true ) {
-		$this->data['hyphenateTitleCase'] = $on;
+		$this->data[ self::HYPHENATE_TITLE_CASE ] = $on;
 	}
 
 	/**
@@ -1067,7 +1228,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param bool $on Optional. Default true.
 	 */
 	public function set_hyphenate_compounds( $on = true ) {
-		$this->data['hyphenateCompounds'] = $on;
+		$this->data[ self::HYPHENATE_COMPOUNDS ] = $on;
 	}
 
 	/**
@@ -1077,7 +1238,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
 	 */
 	public function set_hyphenation_exceptions( $exceptions = [] ) {
-		$this->data['hyphenationCustomExceptions'] = Strings::maybe_split_parameters( $exceptions );
+		$this->data[ self::HYPHENATION_CUSTOM_EXCEPTIONS ] = Strings::maybe_split_parameters( $exceptions );
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,17 +26,25 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\Settings;
 use PHP_Typography\DOM;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
- * Applies smart diacritics (if enabled).
+ * Applies smart area units (if enabled).
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
-class Smart_Diacritics_Fix extends Abstract_Node_Fix {
+class Smart_Area_Units_Fix extends Abstract_Node_Fix {
+
+	const LENGTH_UNITS = '(?:p|µ|[mcdhkMGT])?m'; // Just metric for now.
+	const NUMBER       = '[0-9]+(?:\.,)?[0-9]*';
+	const WHITESPACE   = '\s*';
+
+	const AREA_UNITS   = '/\b(' . self::NUMBER . ')(' . self::WHITESPACE . ')(' . self::LENGTH_UNITS . ')2\b/Su';
+	const VOLUME_UNITS = '/\b(' . self::NUMBER . ')(' . self::WHITESPACE . ')(' . self::LENGTH_UNITS . ')3\b/Su';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -46,29 +54,14 @@ class Smart_Diacritics_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings[ Settings::SMART_DIACRITICS ] ) ) {
-			return; // abort.
+		if ( empty( $settings[ Settings::SMART_AREA_UNITS ] ) ) {
+			return;
 		}
 
-		if (
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ] ) &&
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'] ) &&
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'] )
-		) {
-
-			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-			$replacements   = $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'];
-			$textnode->data = \preg_replace_callback(
-				$settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'],
-				function( $match ) use ( $replacements ) {
-					if ( isset( $replacements[ $match[0] ] ) ) {
-						return $replacements[ $match[0] ];
-					} else {
-						return $match[0];
-					}
-				},
-				$textnode->data
-			);
-		}
+		$textnode->data = \preg_replace(
+			[ self::AREA_UNITS, self::VOLUME_UNITS ],
+			[ '$1 $3²', '$1 $3³' ],
+			$textnode->data
+		);
 	}
 }

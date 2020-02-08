@@ -30,6 +30,8 @@ use PHP_Typography\Settings;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
 
+use PHP_Typography\Settings\Quote_Style;
+
 use PHP_Typography\Fixes\Default_Registry;
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
@@ -88,6 +90,7 @@ use \Mockery as m;
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Maths_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Space_Collapse_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Area_Units_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Numbers_Fix
@@ -456,6 +459,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false ], // smart math.
 			[ '"Hey there!"', '<span class="pull-double">&ldquo;</span>Hey there!&rdquo;', '&ldquo;Hey there!&rdquo;' ], // smart quotes.
 			[ 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ], // smart dashes.
+			[ 'open 10-5', 'open <span class="numbers">10</span>&thinsp;&ndash;&thinsp;<span class="numbers">5</span>', 'open 10&ndash;5' ], // More smart dashes.
 			[ 'Hey...', 'Hey&hellip;', true ], // smart ellipses.
 			[ '(c)', '&copy;', true ], // smart marks.
 			[ 'creme', 'cr&egrave;me', false ], // diacritics.
@@ -497,6 +501,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '3/4 of 10/12/89', '<sup class="numerator"><span class="numbers">3</span></sup>&frasl;<sub class="denominator"><span class="numbers">4</span></sub> of <span class="numbers">10</span>/<span class="numbers">12</span>/<span class="numbers">89</span>', false ],
 			[ 'Certain HTML entities', 'Cer&shy;tain <span class="caps">HTML</span> entities', false ],
 			[ 'during WP-CLI commands', 'dur&shy;ing <span class="caps">WP-CLI</span> commands', false ],
+			[ 'from the early \'60s, American engagement', 'from the ear&shy;ly <span class="push-single"></span>&#8203;<span class="pull-single">&rsquo;</span><span class="numbers">60</span>s, Amer&shy;i&shy;can engagement', 'from the early &rsquo;60s, American engagement' ],
+			[ 'Warenein- und -ausgang', 'Warenein- und &#8209;aus&shy;gang', 'Warenein- und &#8209;ausgang' ],
+			[ 'Fugen-s', 'Fugen&#8209;s', true ],
+			[ 'ein-, zweimal', 'ein&#8209;, zweimal', true ],
+			[ 'В зависимости от региона, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В зависимости от региона, может выращиватся на зерно и&nbsp;силос. После колосовых может выращиватся на второй посев.', false ],
 		];
 	}
 
@@ -585,6 +594,35 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame(
 			$this->clean_html( $html ),
 			$this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {}, $s ) )
+		);
+	}
+
+	/**
+	 * Test process_textnodes.
+	 *
+	 * @covers ::process_textnodes
+	 *
+	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
+	 */
+	public function test_process_textnodes_with_result() {
+		$s = $this->s;
+		$s->set_defaults();
+
+		// We don't really care about the result, so we make sotmhing up.
+		$this->assertSame(
+			'fake result',
+			$this->typo->process_textnodes(
+				'some input',
+				function ( $node ) {
+					$node->data = 'fake result';
+				},
+				$s
+			)
 		);
 	}
 
@@ -837,6 +875,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
 			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
 			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
+			[ '"this is a sentence."',             '&laquo;&nbsp;this is a sentence.&nbsp;&raquo;', Quote_Style::DOUBLE_GUILLEMETS_FRENCH ],
+			[ '("Some" word',                      '(&raquo;Some&laquo; word', Quote_Style::DOUBLE_GUILLEMETS_REVERSED, Quote_Style::SINGLE_GUILLEMETS_REVERSED ],
 		];
 	}
 
@@ -850,13 +890,15 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_smart_quotes_data
 	 *
-	 * @param string $html   HTML input.
-	 * @param string $result Entity-escaped result string.
+	 * @param string $html      HTML input.
+	 * @param string $result    Entity-escaped result string.
+	 * @param string $primary   Optional. The primary quote style. Default DOUBLE_CURLED.
+	 * @param string $secondary Optional. The secondary quote style. Default SINGLE_CURLED.
 	 */
-	public function test_smart_quotes( $html, $result ) {
+	public function test_smart_quotes( $html, $result, $primary = Quote_Style::DOUBLE_CURLED, $secondary = Quote_Style::SINGLE_CURLED ) {
 		$this->s->set_smart_quotes( true );
-		$this->s->set_smart_quotes_primary();
-		$this->s->set_smart_quotes_secondary();
+		$this->s->set_smart_quotes_primary( $primary );
+		$this->s->set_smart_quotes_secondary( $secondary );
 		$this->s->set_true_no_break_narrow_space();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
@@ -892,7 +934,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
-	public function test_smart_quotes_french() {
+	public function test_smart_quotes_french_should_not_apply() {
 		$html   = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 		$result = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 
@@ -903,41 +945,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
-
-	/**
-	 * Provide data for testing smart quotes.
-	 *
-	 * @return array
-	 */
-	public function provide_smart_quotes_special_data() {
-		return [
-			[ '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ],
-		];
-	}
-
-	/**
-	 * Test smart_quotes.
-	 *
-	 * @coversNothing
-	 *
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Text_Parser\Token
-	 *
-	 * @dataProvider provide_smart_quotes_special_data
-	 *
-	 * @param string $html      HTML input.
-	 * @param string $result    Expected entity-escaped result.
-	 * @param string $primary   Primary quote style.
-	 * @param string $secondary Secondard  quote style.
-	 */
-	public function test_smart_quotes_special( $html, $result, $primary, $secondary ) {
-		$this->s->set_smart_quotes( true );
-		$this->s->set_smart_quotes_primary( $primary );
-		$this->s->set_smart_quotes_secondary( $secondary );
-
-		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
-	}
-
 
 	/**
 	 * Test smart_dashes.
@@ -987,6 +994,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 
 		$this->s->set_smart_dashes_style( 'international' );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
+
+		$this->s->set_smart_dashes_style( 'internationalNoHairSpaces' );
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 	}
 
@@ -1126,9 +1136,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_diacritic_language( $lang );
 		$s = $this->s;
 
-		$replacements = $s['diacriticReplacement'];
+		$replacements = $s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
 		unset( $replacements['replacements'][ $unset ] );
-		$s['diacriticReplacement'] = $replacements;
+		$s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $s, false ) ) );
 	}
@@ -1679,6 +1689,16 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				"We just don't know &mdash; really&ndash;, but you&#8208;know&#8208;who",
 				"We just don't know &ndash; really&ndash;, but you&#8208;know&#8208;who",
 			],
+			[
+				'ein-, zweimal',
+				'ein&#8209;, zweimal',
+				'ein&#8209;, zweimal',
+			],
+			[
+				'What-?',
+				'What&#8208;?',
+				'What&#8208;?',
+			],
 		];
 	}
 
@@ -1689,10 +1709,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_dash_spacing_unchanged_data() {
 		return [
-			[ 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ],
-			[ 'Bananen-Milch und -Brot' ],
+			[ 'Vor- und Nachteile, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ],
 			[ 'pick-me-up' ],
-			[ 'You may see a yield that is two-, three-, or fourfold.' ],
+			[ 'You may see a yield that is two- or three- or fourfold.' ],
 		];
 	}
 
@@ -1744,6 +1763,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 
 		$this->s->set_smart_dashes_style( 'international' );
+		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
+
+		$this->s->set_smart_dashes_style( 'internationalNoHairSpaces' );
 		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 	}
@@ -2715,6 +2738,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
 			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ],
 			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ],
+			[ 'В зависимости от региона, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В за&shy;ви&shy;си&shy;мо&shy;сти от ре&shy;ги&shy;о&shy;на, мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на зер&shy;но и си&shy;лос. По&shy;сле ко&shy;ло&shy;со&shy;вых мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на вто&shy;рой по&shy;сев.', 'ru', true, true, true, false ],
+			[ 'В зависимости от Geschäftsübernahme, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В за&shy;ви&shy;си&shy;мо&shy;сти от Gesch&auml;fts&uuml;bernahme, мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на зер&shy;но и си&shy;лос. По&shy;сле ко&shy;ло&shy;со&shy;вых мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на вто&shy;рой по&shy;сев.', 'ru', true, true, true, false ],
+			[ 'Diözesankönigspaar', 'Di&ouml;&shy;ze&shy;san&shy;k&ouml;&shy;nigs&shy;paar', 'de', true, true, true, true ],
+			[ 'Schützenbruderschaften', 'Sch&uuml;t&shy;zen&shy;bru&shy;der&shy;schaf&shy;ten', 'de', true, true, true, true ],
+			[ 'Bundesjungschützentag', 'Bun&shy;des&shy;jung&shy;sch&uuml;t&shy;zen&shy;tag', 'de', true, true, true, true ],
 		];
 	}
 
