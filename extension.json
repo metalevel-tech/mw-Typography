@@ -1,11 +1,46 @@
 {
-	"name": "mw-Typography",
-	"version": "0.1.0",
-	"author": "Spas Z. Spasov",
-	"url": "https://github.com/pa4080/MWTypography",
-	"descriptionmsg": "Uses the repository https://github.com/mundschenk-at/php-typography and process the mediawiki text through it in order to insert hyphens inside.",
-	"license-name": "GPL-3.0+",
-	"requires": {
-		"MediaWiki": ">= 1.7.0"
-	}
+        "name": "PrivateWikiAccessControl",
+        "author": ["Spas Z. Spasov"],
+        "url": "https://github.com/pa4080/mw-Typography",
+        "version": "0.0.1 beta",
+        "license-name": "GPL-3.0+",
+        "type": "other",
+        "description": "For more information: https://github.com/pa4080/mw-Typography",
+        "descriptionmsg": "typography-desc",
+        "manifest_version": 1,
+        "requires": {
+                "MediaWiki": ">= 1.30.0",
+                "skins": {
+                        "Vector": "*"
+                }
+        },
+        "MessagesDirs": {
+                "PrivateWikiAccessControl": [
+                        "i18n"
+                ]
+        },
+        "ResourceModules": {
+                "PrivateWikiAccessControlManager": {
+                        "scripts": "modules/PrivateWikiAccessControlManager.js",
+                        "styles": "modules/PrivateWikiAccessControlManager.css",
+                        "messages": [
+                                "pwac-menu-label",
+                                "pwac-menu-alt-private",
+                                "pwac-menu-alt-public"
+                        ]
+                }
+        },
+        "ResourceFileModulePaths": {
+                "localBasePath": "",
+                "remoteExtPath": "PrivateWikiAccessControl"
+        },
+        "AutoloadClasses": {
+                "PrivateWikiAccessControl": "PrivateWikiAccessControl.body.php",
+                "PrivateWikiAccessControlHooks": "PrivateWikiAccessControl.hooks.php"
+        },
+        "Hooks": {
+                "BeforePageDisplay": "PrivateWikiAccessControlHooks::onBeforePageDisplay",
+                "ResourceLoaderGetConfigVars": "PrivateWikiAccessControlHooks::onResourceLoaderGetConfigVars"
+        }
 }
+
