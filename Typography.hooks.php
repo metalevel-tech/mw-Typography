@@ -66,7 +66,8 @@ class TypographyHooks
      * This is the main function, the one that will process the content.
      * Ref: https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy
      */
-    public static function onParserAfterTidy( Parser &$parser, &$text ) {
+    public static function onParserAfterTidy( Parser &$parser, &$text ) 
+    {
 
         global $mwHyphenationLanguage;
         global $wgTypography;
@@ -74,7 +75,7 @@ class TypographyHooks
         // Get the current NameSpace
         $theCurrentNamespace = $parser->getTitle()->getNamespace();
 
-        // Test whether the current NameSpace belongs to the Allowsed NameSpaces
+        // Test whether the current NameSpace belongs to the Allowed NameSpaces
         if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
 
             // Load the main resources
@@ -167,8 +168,11 @@ class TypographyHooks
     public static function onBeforePageDisplay(OutputPage $out, Skin $skin)
     {
         global $wgTypography;
-        $theCurrentNamespace = $out->getTitle()->getNamespace();
 
+        // Get the current NameSpace
+        $theCurrentNamespace = $parser->getTitle()->getNamespace();
+
+        // Test whether the current NameSpace belongs to the Allowed NameSpaces
         if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
             $out->addModules('TypographyScriptsAndStyles');
             return true;
