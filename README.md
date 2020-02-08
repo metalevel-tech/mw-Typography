@@ -45,7 +45,7 @@ php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.ph
 Finally enable the extension in `LocalSettings.php` of your MediaWiki instance:
 
 ````php
-require_once "$IP/extensions/mw-Typography/mw-Typography.php";
+wfLoadExtension( 'Typography' );
 ````
 
 Navigate to `Special:Version` to check whether `mw-Typography` extension is enabled. It should work now.
