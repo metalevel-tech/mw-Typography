@@ -40,7 +40,7 @@ if (!defined('MEDIAWIKI')) {
     // Set the NameSpaces on which the extension will operate
     // Ref: https://www.mediawiki.org/wiki/Manual:Namespace#Built-in_namespaces
     if (!$wgTypography['AllowedNameSpaces']) {
-        $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
+        $wgTypography['AllowedNameSpaces'] = array('false', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
     }
 
     // Get the Language Locales. If any locales are not provided via $wgTypography['HyphenLanguages'],
@@ -58,6 +58,81 @@ if (!defined('MEDIAWIKI')) {
     // LocalSettings.php example: $wgTypography['ColonWords'] = array('Категория:', 'Category:');
     if (!$wgTypography['ColonWords']) {
         $wgTypography['ColonWords'] = false;
+    }
+
+    // Default settings for PHP-Typography
+    // Ref: vendor/mundschenk-at/php-typography/src/class-settings.php   Line: 393
+    $wgTypography['SettingsDefault'] = array(
+        // General attributes.
+        'set_tags_to_ignore' => array(),
+        'set_classes_to_ignore' => array(),
+        'set_ids_to_ignore' => array(),
+
+        // Smart characters.
+        'set_smart_quotes' => false,
+        'set_smart_quotes_primary' => 'not_set',
+        'set_smart_quotes_secondary' => 'not_set',
+        'set_smart_quotes_exceptions' => 'not_set',
+        'set_smart_dashes' => false,
+        'set_smart_dashes_style' => 'not_set',
+        'set_smart_ellipses' => false,
+        'set_smart_diacritics' => false,
+        'set_diacritic_language' => 'not_set',
+        'set_diacritic_custom_replacements' => 'not_set',
+        'set_smart_marks' => false,
+        'set_smart_ordinal_suffix' => false,
+        'set_smart_ordinal_suffix_match_roman_numerals' => false,
+        'set_smart_math' => false,
+        'set_smart_fractions' => false,
+        'set_smart_exponents' => false,
+
+        // Smart spacing.
+        'set_fraction_spacing' => false,
+        'set_unit_spacing' => false,
+        'set_french_punctuation_spacing' => false,
+        'set_units' => false,
+        'set_dash_spacing' => false,
+        'set_dewidow' => false,
+        'set_max_dewidow_length' => 'not_set',
+        'set_max_dewidow_pull' => 'not_set',
+        'set_dewidow_word_number' => 'not_set',
+        'set_wrap_hard_hyphens' => false,
+        'set_url_wrap' => false,
+        'set_email_wrap' => false,
+        'set_min_after_url_wrap' => false,
+        'set_space_collapse' => false,
+        'set_true_no_break_narrow_space' => true,
+
+        // Character styling.
+        'set_style_ampersands' => false,
+        'set_style_caps' => false,
+        'set_style_initial_quotes' => false,
+        'set_style_numbers' => false,
+        'set_style_hanging_punctuation' => false,
+        'set_initial_quote_tags' => false,
+
+        // Hyphenation.
+        'set_hyphenation' => true,
+        'set_hyphenation_language' => 'not_set',
+        'set_min_length_hyphenation' => 'not_set',
+        'set_min_before_hyphenation' => 'not_set',
+        'set_min_after_hyphenation' => 'not_set',
+        'set_hyphenate_headings' => 'not_set',
+        'set_hyphenate_all_caps' => 'not_set',
+        'set_hyphenate_title_case' => 'not_set',
+        'set_hyphenate_compounds' => 'not_set',
+        'set_hyphenation_exceptions' => 'not_set',
+
+        // Parser error handling.
+        'set_ignore_parser_errors' => 'not_set',
+
+        // Single character words /vendor/mundschenk-at/php-typography/src/class-settings.php:747
+        'set_single_character_word_spacing' => false,
+    );
+
+    // Merge the user's settings with the default ones
+    foreach ($wgTypography['Settings'] as $key => $value) {
+        $wgTypography['SettingsDefault'][$key]  = $value;
     }
 }
 
@@ -89,6 +164,13 @@ class TypographyHooks
             // For more information: vendor/mundschenk-at/php-typography/src/class-settings.php
             $mwTypographySettings = new \PHP_Typography\Settings();
 
+            foreach ($wgTypography['SettingsDefault'] as $key => $value) {
+                if ($value != 'not_set') {
+                    $mwTypographySettings->{$key}($value);
+                }
+            }
+
+	    /**
             // General attributes.
             $mwTypographySettings->set_tags_to_ignore();
 
@@ -141,7 +223,7 @@ class TypographyHooks
             // Hyphenation.
             $mwTypographySettings->set_hyphenation(true);
             //$mwTypographySettings->set_hyphenation_language('bg');
-            $mwTypographySettings->set_min_length_hyphenation(4);
+            $mwTypographySettings->set_min_length_hyphenation('4');
             $mwTypographySettings->set_min_before_hyphenation();
             $mwTypographySettings->set_min_after_hyphenation();
             $mwTypographySettings->set_hyphenate_headings();
@@ -155,6 +237,7 @@ class TypographyHooks
 
             // Single character words /vendor/mundschenk-at/php-typography/src/class-settings.php:747
             $mwTypographySettings->set_single_character_word_spacing(false);
+            **/
 
             // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
