@@ -38,18 +38,15 @@ if (!defined('MEDIAWIKI')) {
     global $wgLanguageCode;
 
     // Set the NameSpaces on which the extension will operate
-    if ($wgTypography['AllowedNameSpaces']) {
-        $wgTypography['AllowedNameSpaces'] = $wgTypography['AllowedNameSpaces'];
-    } else {
-        $wgTypography['AllowedNameSpaces'] = array('0', '1', '10', '11', '4', '5', '6', '7', '14', '15', '20', '21');
+    // Ref: https://www.mediawiki.org/wiki/Manual:Namespace#Built-in_namespaces
+    if (!$wgTypography['AllowedNameSpaces']) {
+        $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
     }
 
     // Get the Language Locales. If any locales are not provided via $wgTypography['HyphenLanguages'],
     // we will tray to autodetect the wiki's language and will apply some fixes as 'en'->'en-US'.
     // The list of the available languages and their locales: vendor/mundschenk-at/php-typography/src/lang
-    if ($wgTypography['HyphenLanguages']) {
-        $wgTypography['HyphenLanguages'] = $wgTypography['HyphenLanguages'];
-    } else {
+    if (!$wgTypography['HyphenLanguages']) {
         if ($wgLanguageCode == 'en') {
             $wgTypography['HyphenLanguages'] = array('en-US');
         } else {
@@ -58,10 +55,9 @@ if (!defined('MEDIAWIKI')) {
     }
 
     // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
-    if ($wgTypography['ColonWords']) {
-        $wgTypography['ColonWords'] = $wgTypography['ColonWords'];
-    } else {
-        $wgTypography['ColonWords'] = array('Категория:', 'Category:');
+    // LocalSettings.php example: $wgTypography['ColonWords'] = array('Категория:', 'Category:');
+    if (!$wgTypography['ColonWords']) {
+        $wgTypography['ColonWords'] = false;
     }
 }
 
@@ -164,11 +160,13 @@ class TypographyHooks
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
 
             // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
-            foreach ($wgTypography['ColonWords'] as $colonWord) {
-                $colonWord_replace_1 = $colonWord . ' ';
-                $colonWord_replace_2 = $colonWord . '  ';
-                $text = str_replace($colonWord, $colonWord_replace_1, $text);
-                $text = str_replace($colonWord_replace_2, $colonWord_replace_1, $text);
+	    if ($wgTypography['ColonWords']) {
+                foreach ($wgTypography['ColonWords'] as $colonWord) {
+                    $colonWord_replace_1 = $colonWord . ' ';
+                    $colonWord_replace_2 = $colonWord . '  ';
+                    $text = str_replace($colonWord, $colonWord_replace_1, $text);
+                    $text = str_replace($colonWord_replace_2, $colonWord_replace_1, $text);
+                }
             }
 
             // Process the content multi language, for each language
