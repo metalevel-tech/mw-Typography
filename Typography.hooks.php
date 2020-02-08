@@ -27,7 +27,6 @@
  * https://github.com/mundschenk-at/php-typography	        // the hyphenation repository
  * https://www.mediawiki.org/wiki/Extension:DollarSign	        // example structure of an extension
  * https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy
- *
  */
 
 
@@ -36,6 +35,7 @@ if (!defined('MEDIAWIKI')) {
 } else {
     // Get the extension's settings array
     global $wgTypography;
+    global $wgLanguageCode;
 
     // Set the NameSpaces on which the extension will operate
     if ($wgTypography['AllowedNameSpaces']) {
@@ -44,18 +44,24 @@ if (!defined('MEDIAWIKI')) {
         $wgTypography['AllowedNameSpaces'] = array('0', '1', '10', '11', '4', '5', '6', '7', '14', '15', '20', '21');
     }
 
-    // Get the Language Code(s)
-    // The list of the available languages and their codes: vendor/mundschenk-at/php-typography/src/lang
-    global $wgLanguageCode;
-
-    if ($wgTypography['HyphenLanguage']) {
-        $wgTypography['HyphenLanguage'] = $wgTypography['HyphenLanguage'];
+    // Get the Language Locales. If any locales are not provided via $wgTypography['HyphenLanguages'],
+    // we will tray to autodetect the wiki's language and will apply some fixes as 'en'->'en-US'.
+    // The list of the available languages and their locales: vendor/mundschenk-at/php-typography/src/lang
+    if ($wgTypography['HyphenLanguages']) {
+        $wgTypography['HyphenLanguages'] = $wgTypography['HyphenLanguages'];
     } else {
         if ($wgLanguageCode == 'en') {
-            $wgTypography['HyphenLanguage'] = array('en-US');
+            $wgTypography['HyphenLanguages'] = array('en-US');
         } else {
-            $wgTypography['HyphenLanguage'] = array($wgLanguageCode);
+            $wgTypography['HyphenLanguages'] = array($wgLanguageCode);
         }
+    }
+
+    // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
+    if ($wgTypography['ColonWords']) {
+        $wgTypography['ColonWords'] = $wgTypography['ColonWords'];
+    } else {
+        $wgTypography['ColonWords'] = array('Категория:', 'Category:');
     }
 }
 
@@ -70,7 +76,7 @@ class TypographyHooks
      * This is the main function, the one that will process the content.
      * Ref: https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy
      */
-    public static function onParserAfterTidy( Parser &$parser, &$text ) 
+    public static function onParserAfterTidy( Parser &$parser, &$text )
     {
         global $wgTypography;
 
@@ -139,7 +145,6 @@ class TypographyHooks
             // Hyphenation.
             $mwTypographySettings->set_hyphenation(true);
             //$mwTypographySettings->set_hyphenation_language('bg');
-            //$mwTypographySettings->set_hyphenation_language($wgTypography['HyphenLanguage']);
             $mwTypographySettings->set_min_length_hyphenation(4);
             $mwTypographySettings->set_min_before_hyphenation();
             $mwTypographySettings->set_min_after_hyphenation();
@@ -147,7 +152,7 @@ class TypographyHooks
             $mwTypographySettings->set_hyphenate_all_caps();
             $mwTypographySettings->set_hyphenate_title_case();
             $mwTypographySettings->set_hyphenate_compounds();
-            $mwTypographySettings->set_hyphenation_exceptions([ 'ст' ]);
+            $mwTypographySettings->set_hyphenation_exceptions();
 
             // Parser error handling.
             $mwTypographySettings->set_ignore_parser_errors();
@@ -157,14 +162,22 @@ class TypographyHooks
 
             // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
-            
-            // $text = $mwTypographyTypo->process($text, $mwTypographySettings);
-            
-            // Process the content for each language
-            foreach ($wgTypography['HyphenLanguage'] as $language) {
+
+            // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
+            foreach ($wgTypography['ColonWords'] as $colonWord) {
+                $colonWord_replace_1 = $colonWord . ' ';
+                $colonWord_replace_2 = $colonWord . '  ';
+                $text = str_replace($colonWord, $colonWord_replace_1, $text);
+                $text = str_replace($colonWord_replace_2, $colonWord_replace_1, $text);
+            }
+
+            // Process the content multi language, for each language
+            foreach ($wgTypography['HyphenLanguages'] as $language) {
                 $mwTypographySettings->set_hyphenation_language($language);
                 $text = $mwTypographyTypo->process($text, $mwTypographySettings);
             }
+            // Process the content for single language
+            // $text = $mwTypographyTypo->process($text, $mwTypographySettings);
 
             return true;
         }
