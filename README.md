@@ -24,16 +24,15 @@ Clone (download) the extension's repository in your MediaWiki `$IP/extensions` d
 
 ````bash
 cd $IP/extensions
-# Use HTTPS:
-git clone https://github.com/pa4080/mw-Typography.git
+sudo git clone https://github.com/pa4080/mw-Typography.git Typography # HTTPS
+sudo git clone git@github.com:pa4080/mw-Typography.git Typography     # SSH
+
+cd $IP/extensions/PrivateWikiAccessControl
+git branch -a
+sudo git checkout the_desired_branch
 ````
 
-For developers (which have enough rights and [ssh access](https://askubuntu.com/a/1097078/566421)):
-
-````bash
-# Use SSH:
-git clone git@github.com:pa4080/mw-Typography.git
-````
+* In order to setup SSH access read: [How do I setup SSH key based authentication for GitHub by using .ssh/config?](https://askubuntu.com/a/1097078/566421)
 
 The current repository redistributes [php-typography](https://github.com/mundschenk-at/php-typography), if you want to [update](https://github.com/mundschenk-at/php-typography#installation) it, you can use Composer in this way:
 
