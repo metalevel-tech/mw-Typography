@@ -34,6 +34,7 @@
 if (!defined('MEDIAWIKI')) {
     die('This file is an extension to MediaWiki and thus not a valid entry point.');
 } else {
+    // Get the extension's settings array
     global $wgTypography;
 
     // Set the NameSpaces on which the extension will operate
@@ -47,10 +48,14 @@ if (!defined('MEDIAWIKI')) {
     // The list of the available languages and their codes: vendor/mundschenk-at/php-typography/src/lang
     global $wgLanguageCode;
 
-    if (!$wgTypography['HyphenLanguage'] && $wgLanguageCode == 'en') {
-        $wgTypography['HyphenLanguage'] = 'en-US';
+    if ($wgTypography['HyphenLanguage']) {
+        $wgTypography['HyphenLanguage'] = $wgTypography['HyphenLanguage'];
     } else {
-        $wgTypography['HyphenLanguage'] = $wgLanguageCode;
+        if ($wgLanguageCode == 'en') {
+            $wgTypography['HyphenLanguage'] = array('en-US');
+        } else {
+            $wgTypography['HyphenLanguage'] = array($wgLanguageCode);
+        }
     }
 }
 
@@ -134,7 +139,7 @@ class TypographyHooks
             // Hyphenation.
             $mwTypographySettings->set_hyphenation(true);
             //$mwTypographySettings->set_hyphenation_language('bg');
-            $mwTypographySettings->set_hyphenation_language($wgTypography['HyphenLanguage']);
+            //$mwTypographySettings->set_hyphenation_language($wgTypography['HyphenLanguage']);
             $mwTypographySettings->set_min_length_hyphenation(4);
             $mwTypographySettings->set_min_before_hyphenation();
             $mwTypographySettings->set_min_after_hyphenation();
@@ -152,7 +157,15 @@ class TypographyHooks
 
             // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
-            $text = $mwTypographyTypo->process($text, $mwTypographySettings);
+            
+            // $text = $mwTypographyTypo->process($text, $mwTypographySettings);
+            
+            // Process the content for each language
+            foreach ($wgTypography['HyphenLanguage'] as $language) {
+                $mwTypographySettings->set_hyphenation_language($language);
+                $text = $mwTypographyTypo->process($text, $mwTypographySettings);
+            }
+
             return true;
         }
     }
