@@ -1,0 +1,11 @@
+{
+	"name": "mw-Typography",
+	"version": "0.1.0",
+	"author": "Spas Z. Spasov",
+	"url": "https://github.com/pa4080/MWTypography",
+	"descriptionmsg": "Uses the repository https://github.com/mundschenk-at/php-typography and process the mediawiki text through it in order to insert hyphens inside.",
+	"license-name": "GPL-3.0+",
+	"requires": {
+		"MediaWiki": ">= 1.7.0"
+	}
+}

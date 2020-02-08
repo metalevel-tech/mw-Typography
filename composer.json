@@ -1,0 +1,5 @@
+{
+    "require": {
+        "mundschenk-at/php-typography": "^6.4"
+    }
+}
