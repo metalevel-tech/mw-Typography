@@ -170,6 +170,75 @@ class TypographyHooks
                 }
             }
 
+            /**
+            // General attributes.
+            $mwTypographySettings->set_tags_to_ignore();
+
+            $mwTypographySettings->set_classes_to_ignore([ 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list' ]);
+            $mwTypographySettings->set_ids_to_ignore([ 'articlePhase', 'articleStatus', 'wspmTable', 'articleBelongsTo' ]);
+
+            // Smart characters.
+            $mwTypographySettings->set_smart_quotes(false);
+            $mwTypographySettings->set_smart_quotes_primary();
+            $mwTypographySettings->set_smart_quotes_secondary();
+            $mwTypographySettings->set_smart_quotes_exceptions();
+            $mwTypographySettings->set_smart_dashes(false);
+            $mwTypographySettings->set_smart_dashes_style();
+            $mwTypographySettings->set_smart_ellipses(false);
+            $mwTypographySettings->set_smart_diacritics(false);
+            $mwTypographySettings->set_diacritic_language();
+            $mwTypographySettings->set_diacritic_custom_replacements();
+            $mwTypographySettings->set_smart_marks(false);
+            $mwTypographySettings->set_smart_ordinal_suffix(false);
+            $mwTypographySettings->set_smart_ordinal_suffix_match_roman_numerals(false);
+            $mwTypographySettings->set_smart_math(false);
+            $mwTypographySettings->set_smart_fractions(false);
+            $mwTypographySettings->set_smart_exponents(false);
+
+            // Smart spacing.
+            $mwTypographySettings->set_fraction_spacing(false);
+            $mwTypographySettings->set_unit_spacing(false);
+            $mwTypographySettings->set_french_punctuation_spacing(false);
+            $mwTypographySettings->set_units(false);
+            $mwTypographySettings->set_dash_spacing(false);
+            $mwTypographySettings->set_dewidow(false);
+            $mwTypographySettings->set_max_dewidow_length();
+            $mwTypographySettings->set_max_dewidow_pull();
+            $mwTypographySettings->set_dewidow_word_number();
+            $mwTypographySettings->set_wrap_hard_hyphens(false);
+            $mwTypographySettings->set_url_wrap(false);
+            $mwTypographySettings->set_email_wrap(false);
+            $mwTypographySettings->set_min_after_url_wrap(false);
+            $mwTypographySettings->set_space_collapse(false);
+            $mwTypographySettings->set_true_no_break_narrow_space(true);
+
+            // Character styling.
+            $mwTypographySettings->set_style_ampersands(false);
+            $mwTypographySettings->set_style_caps(false);
+            $mwTypographySettings->set_style_initial_quotes(false);
+            $mwTypographySettings->set_style_numbers(false);
+            $mwTypographySettings->set_style_hanging_punctuation(false);
+            $mwTypographySettings->set_initial_quote_tags(false);
+
+            // Hyphenation.
+            $mwTypographySettings->set_hyphenation(true);
+            //$mwTypographySettings->set_hyphenation_language('bg');
+            $mwTypographySettings->set_min_length_hyphenation('4');
+            $mwTypographySettings->set_min_before_hyphenation();
+            $mwTypographySettings->set_min_after_hyphenation();
+            $mwTypographySettings->set_hyphenate_headings();
+            $mwTypographySettings->set_hyphenate_all_caps();
+            $mwTypographySettings->set_hyphenate_title_case();
+            $mwTypographySettings->set_hyphenate_compounds();
+            $mwTypographySettings->set_hyphenation_exceptions();
+
+            // Parser error handling.
+            $mwTypographySettings->set_ignore_parser_errors();
+
+            // Single character words /vendor/mundschenk-at/php-typography/src/class-settings.php:747
+            $mwTypographySettings->set_single_character_word_spacing(false);
+            **/
+
             // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
 
