@@ -170,7 +170,7 @@ class TypographyHooks
         global $wgTypography;
 
         // Get the current NameSpace
-        $theCurrentNamespace = $parser->getTitle()->getNamespace();
+        $theCurrentNamespace = $out->getTitle()->getNamespace();
 
         // Test whether the current NameSpace belongs to the Allowed NameSpaces
         if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
