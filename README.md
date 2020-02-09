@@ -108,7 +108,7 @@ Requirements transcluded from [Code by Der Mundschenk & Cie. /wp-Typography](htt
 
 MediaWiki version compatibility:
 
-* The extension is tested with MediaWiki **1.32**, **1.33** and **1.34**. The hooks - [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) and [BeforePageDisplay](BeforePageDisplay) - used in the extension are available from version 1.5 and 1.7. According to that **MediaWiki 1.7** should be the oldest version that could use this extension. Currently, independently of the branch, the minimal verion is set, by the [`extension.json`](/extension.json) file, to 1.30.
+* The extension is tested with MediaWiki **1.32**, **1.33** and **1.34**. The hooks - [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) and [BeforePageDisplay](https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay) - used in the extension are available from version 1.5 and 1.7. According to that **MediaWiki 1.7** should be the oldest version that could use this extension. Currently, independently of the branch, the minimal verion is set, by the [`extension.json`](/extension.json) file, to 1.30.
 
 * I will issue a branch of this extension after each MediaWiki's branch that I'm following on my production or test environment.
 
