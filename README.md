@@ -10,19 +10,19 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Wiki family support**. The repository [php-typography](https://github.com/mundschenk-at/php-typography) supports over [70 languages](vendor/mundschenk-at/php-typography/src/lang). So the extension has the following options:
 
-  * Autodetect the wiki's language - in this case the extension will detect the wiki language, and process the text within that wiki by this **single language**. There are some locale limitation of this autodetection - for example the locale `en` will be converted `en-US`, but such filters are not applied for any other language. I would prefer th other option!
+  * Autodetect the wiki's language - in this case the extension will detect the wiki's language, and process the text within that wiki by this **single language**. There are some locales limitations of this autodetection - for example the locale `en` will be converted to `en-US`, but such filters are not applied for any other language. I would prefer the other option!
 
   * Manual set the wiki's language**s** - with this option you can manually set the wiki's content language. [Or you can set more than one content languages in order to translate your **multi language** wiki's content]. In order to activate this option you need to add a line as the follow in your `LocalSettings.php` file:
 
-  ````php
-  $wgTypography['HyphenLanguages'] = array('bg', 'en-US', 'ru');
-  ````
+    ````php
+    $wgTypography['HyphenLanguages'] = array('bg', 'en-US', 'ru');
+    ````
 
      You can see the list of the available language and their locales in the directory [vendor/mundschenk-at/php-typography/src/lang](vendor/mundschenk-at/php-typography/src/lang).
 
 * **Justify the text.** The extension will add a small portion of [CSS code](modules/TypographyStyle.css) in order to justify your wiki content. **It is better (faster) to place CCS such this in your `MediaWiki:Common.css`.** In the next version the loading of this CSS code will be optional.
 
-* **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/). The current implementation of the [script](/modules) has a bug: When you copy text from `pre` tag, the new line characters are dismissed. The temporal solution is to copy the entire `pre` tag plus small portion of text feom any surrounded tag `div`, `p`, etc.
+* **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/). The current implementation of the [script](/modules) has a bug: When you copy text from `pre` tag, the new line characters are dismissed. The temporal solution is to copy the entire `pre` tag plus small portion of text from any surrounded tag `div`, `p`, etc.
 
 * **Name spaces limitation.** There is an array that defines the numerical values of the name spaces on which the extension should operate. You can setup the desired values within your `LocalSettings.php`. The default values are:
 
@@ -30,13 +30,15 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
   $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
   ````
 
-  Please do not add MediaWiki's `Special:` (NS 8 and 9) to this array, because their processing time is too slow.
+  Please do not add MediaWiki's `Special:` pages (NS 8 and 9) to this array, because their processing time is too slow.
 
-* **Compound words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contains ':', like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the tow parts will be processed properly and will be hyphenated. Within the repository PHP-Typography there is an identical option, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
+* **Compound words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contain `:`, like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the two parts will be processed properly and will be hyphenated. There is an identical option within the settings of the repository PHP-Typography, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
 
    ````php
    $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
    ````
+
+   If you want to use the native PHP-Typography's option read the next section.
 
 * **PHP-Typography settings.** All settings of the main repository PHP-Typography are available via the array `$wgTypography['Settings']` that should be added to your `LocalSettings.php` file in a way as this:
 
@@ -62,7 +64,7 @@ cd $IP/extensions
 sudo git clone https://github.com/pa4080/mw-Typography.git Typography # HTTPS
 sudo git clone git@github.com:pa4080/mw-Typography.git Typography     # SSH
 
-cd $IP/extensions/PrivateWikiAccessControl
+cd $IP/extensions/Typography
 git branch -a
 sudo git checkout the_desired_branch
 ````
@@ -72,12 +74,12 @@ sudo git checkout the_desired_branch
 The current repository redistributes [php-typography](https://github.com/mundschenk-at/php-typography), if you want to [update](https://github.com/mundschenk-at/php-typography#installation) it, you can use Composer in this way:
 
 ````bash
-cd $IP/extensions/mw-Typography
+cd $IP/extensions/Typography
 sudo composer update            # sudo chown -R www-data:www-data ./ && sudo -u www-data composer update
 php vendor/bin/update-iana.php  # sudo -u www-data php vendor/bin/update-iana.php
 ````
 
-Finally enable the extension in `LocalSettings.php` of your MediaWiki instance:
+Finally enable the extension in `LocalSettings.php` of your MediaWiki instance and optionnaly add some user's configuration settings:
 
 ````php
 wfLoadExtension( 'Typography' );
@@ -96,7 +98,9 @@ $wgTypography['Settings'] = array(
 );
 ````
 
-Navigate to `Special:Version` to check whether `mw-Typography` extension is enabled. It should work now.
+* Note all settings added by `LocalSettings.php` will override the default values!
+
+Navigate to `Special:Version` to check whether `Extension:Typography` is enabled. It should works now.
 
 ## Requirements
 
