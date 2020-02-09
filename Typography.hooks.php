@@ -126,7 +126,7 @@ if (!defined('MEDIAWIKI')) {
         // Parser error handling.
         'set_ignore_parser_errors' => 'not_set',
 
-        // Single character words /vendor/mundschenk-at/php-typography/src/class-settings.php:747
+        // Single character words vendor/mundschenk-at/php-typography/src/class-settings.php:747
         'set_single_character_word_spacing' => false,
     );
 
