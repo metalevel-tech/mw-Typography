@@ -42,12 +42,12 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
   ````php
   $wgTypography['Settings'] = array(
-    'set_classes_to_ignore' => array( 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list'),
-    'set_ids_to_ignore' => array('articlePhase', 'articleStatus', 'wspmTable', 'articleBelongsTo'),
-    'set_hyphenation' => true,
-    'set_min_length_hyphenation' => 4,
-    'set_min_before_hyphenation' => 2,
-    'set_single_character_word_spacing' => false,
+      'set_classes_to_ignore' => array( 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list'),
+      'set_ids_to_ignore' => array('articlePhase', 'articleStatus', 'wspmTable', 'articleBelongsTo'),
+      'set_hyphenation' => true,
+      'set_min_length_hyphenation' => 4,
+      'set_min_before_hyphenation' => 2,
+      'set_single_character_word_spacing' => false,
   );
   ````
   
@@ -87,12 +87,12 @@ $wgTypography['HyphenLanguages'] = array('bg', 'en-US', 'ru');
 $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15', '20', '21');
 $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
 $wgTypography['Settings'] = array(
-		'set_classes_to_ignore' => array( 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list'),
-		'set_ids_to_ignore' => array( 'articlePhase', 'articleStatus', 'wspmTable', 'articleBelongsTo' ),
-		'set_hyphenation' => true,
-		'set_min_length_hyphenation' => 4,
-		'set_min_before_hyphenation' => 2,
-		'set_single_character_word_spacing' => false,
+    'set_classes_to_ignore' => array( 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list'),
+    'set_ids_to_ignore' => array('articlePhase', 'articleStatus', 'wspmTable', 'articleBelongsTo'),
+    'set_hyphenation' => true,
+    'set_min_length_hyphenation' => 4,
+    'set_min_before_hyphenation' => 2,
+    'set_single_character_word_spacing' => false,
 );
 ````
 
