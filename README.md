@@ -8,15 +8,15 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Hyphenation of the wiki text.** The repository [php-typography](https://github.com/mundschenk-at/php-typography) has more features (than this), but currently most of them are disabled via the configuration. My further intention is to make them available through configuration variables. If you wish you can tweak your own copy of the extension through changing the values of the configuration object `$mwTypographySettings`.
 
-* **Wiki family support**. The repository [php-typography](https://github.com/mundschenk-at/php-typography) supports over [70 languages](vendor/mundschenk-at/php-typography/src/lang). So the extension has a language code "translation" condition, that uses `$wgLanguageCode` in order to determinate the language of your wiki automatically. Currently for the wikis that use `$wgLanguageCode = 'en'` the hyphenation language is set as `$mwHyphenationLanguage = 'en-US'`. You can tweak this behavior by editing of [`mw-Typography.php`](mw-Typography.php).
+* **Wiki family support**. The repository [php-typography](https://github.com/mundschenk-at/php-typography) supports over [70 languages](vendor/mundschenk-at/php-typography/src/lang). So the extension has a language code "translation" condition, that uses `$wgLanguageCode` in order to determinate the language of your wiki automatically. Currently for the wikis that use `$wgLanguageCode = 'en'` the hyphenation language is set as `$mwHyphenationLanguage = 'en-US'`. You can tweak this behavior by editing of [`Typography.hooks.php`](/Typography.hooks.php).
 
   Note this feature is not a real multi language support, that will allow you to hyphenate wiki text with  multi language content. An example of such implementation cold be found at the WordPress plugin [wp-Typography](https://wordpress.org/plugins/wp-typography/).
 
-* **Justify the text.** The extension will add a small portion of [CSS code](css/mw-Typography.css) in order to justify your wiki content. If you do not wish that, just remove the relevant line in [`mw-Typography.php`](mw-Typography.php). **It is better (faster) to place CCS such this in your `MediaWiki:Common.css`.**
+* **Justify the text.** The extension will add a small portion of [CSS code](modules/TypographyStyle.css) in order to justify your wiki content. If you do not wish that, just remove the relevant line in [`Typography.hooks.php`](/Typography.hooks.php). **It is better (faster) to place CCS such this in your `MediaWiki:Common.css`.**
 
 * **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/).
 
-* **Name spaces limitation.** There is an array - `$mwTypographyAllowedNameSpaces` - that contains the number values of the name spaces on which the extension should operate. I've involved this limitation because processing of some MediaWiki `Special:` pages is too slow. Currently you can extend this array through editing [`mw-Typography.php`](mw-Typography.php).
+* **Name spaces limitation.** There is an array - `$mwTypographyAllowedNameSpaces` - that contains the number values of the name spaces on which the extension should operate. I've involved this limitation because processing of some MediaWiki `Special:` pages is too slow. Currently you can extend this array through editing [`Typography.hooks.php`](/Typography.hooks.php).
 
 ## Installation
 
@@ -27,7 +27,7 @@ cd $IP/extensions
 sudo git clone https://github.com/pa4080/mw-Typography.git Typography # HTTPS
 sudo git clone git@github.com:pa4080/mw-Typography.git Typography     # SSH
 
-cd $IP/extensions/PrivateWikiAccessControl
+cd $IP/extensions/Typography
 git branch -a
 sudo git checkout the_desired_branch
 ````
@@ -48,7 +48,7 @@ Finally enable the extension in `LocalSettings.php` of your MediaWiki instance:
 require_once "$IP/extensions/Typography/mw-Typography.php";
 ````
 
-Navigate to `Special:Version` to check whether `mw-Typography` extension is enabled. It should work now.
+Navigate to `Special:Version` to check whether the `Extension:Typography` is enabled. It should works now.
 
 ## Requirements
 
@@ -62,7 +62,6 @@ MediaWiki version compatibility:
 
 * The extension is tested only with **MediaWiki 1.32**. The hooks - [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) and [BeforePageDisplay](BeforePageDisplay) - used in the extension are available from version 1.5 and 1.7. According to that **MediaWiki 1.7** should be the oldest version that could use this extension.
 
-* ~~In the file [`mw-Typography.php`](mw-Typography.php) is made a limitation to **MediaWiki 1.32** and above. Probably the extension should work on older versions, but I've not tested this.~~
 
 ## Screen shots and tests
 
