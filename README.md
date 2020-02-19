@@ -130,10 +130,10 @@ The extension is tested on a MediaWiki Family that supports Bulgarian, Russian a
 
 Here is a performance comparison between processing multilingual text (BG, RU, EN) with enabled or disabled Typography extension. You can see the performance difference is not so huge with a relatively large page that contains about 10k characters (which is about 5 printed pages).
 
-| NewPP limit report        | 380,000 chars | 380,000 **+Typo** | 10,000 chars | 10,000 **+Typo** |
-| ---                       | ---           | ---               | ---          | ---              |
-| CPU time usage (seconds): | 0.147         | **3.581**         | 0.101        | **0.386**        |
-| CPU time usage (seconds): | 0.975         | **4.521**         | 0.592        | **0.920**        |
+| NewPP limit report         | 380,000 chars | 380,000 **+Typo** | 10,000 chars | 10,000 **+Typo** |
+| ---                        | ---           | ---               | ---          | ---              |
+| CPU time usage  (seconds): | 0.147         | **3.581**         | 0.101        | **0.386**        |
+| Real time usage (seconds): | 0.975         | **4.521**         | 0.592        | **0.920**        |
 
 Note when the page is already rendered and loaded from the cache these are not the actual times.
 
