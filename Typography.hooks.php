@@ -56,7 +56,7 @@ if (!defined('MEDIAWIKI')) {
 
     // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
     // LocalSettings.php example: $wgTypography['ColonWords'] = array('Категория:', 'Category:');
-    if (!$wgTypography['ColonWords']) {
+    if (!isset($wgTypography['ColonWords'])) {
         $wgTypography['ColonWords'] = false;
     }
 
