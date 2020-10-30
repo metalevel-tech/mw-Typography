@@ -1,5 +1,20 @@
 # Change History
 
+## 6.6.0 - April 5, 2020
+*   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
+*   _Change_: Significantly updated hyphenation patterns for:
+    -   Amharic
+    -   Chinese pinyin (Latin)
+    -   German
+    -   German (Traditional)
+    -   German (Swiss Traditional)
+    -   Latin (Classical)
+    -   Latin (Liturgical)
+    -   Spanish
+
+## 6.5.3 - March 27, 2020
+*   _Bugfix_: Ambiguous `blase` removed from smart diacritics list for `de-DE`.`
+
 ## 6.5.2 - December 7, 2019
 *   _Bugfix_: PHP 7.4 compatibility.
 *   _Bugfix_: Parsing does not break anymore when the returned more `DOMDocument`
@@ -26,7 +41,10 @@
     rendered with an apostrophe.
 
 ## 6.4.3 - January 29, 2019
-*   _Bugfix_: To prevent common false positives for single-letter Roman ordinals (especially in French and Dutch), Roman numeral matching is now only enabled when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`. In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
+*   _Bugfix_: To prevent common false positives for single-letter Roman ordinals
+    (especially in French and Dutch), Roman numeral matching is now only enabled
+    when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`.
+    In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
 
 ## 6.4.2 - January 27, 2019
 *   _Bugfix_: The Unicode hyphen character (`‐`) is recognized as a valid word combiner.

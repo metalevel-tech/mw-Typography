@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = new Node_Fixes\Smart_Diacritics_Fix();
 	}
@@ -65,6 +65,7 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 			[ 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ],
 			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'en-US' ],
 			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'en-US' ],
+			[ 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'de-DE' ],
 		];
 	}
 
