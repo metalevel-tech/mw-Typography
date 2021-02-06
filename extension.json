@@ -18,12 +18,12 @@
         },
         "ResourceModules": {
                 "TypographyScriptsAndStyles": {
-                        "scripts": "modules/TypographyCleanClipboard.js",
-                        "styles": "modules/TypographyStyle.css"
+                        "scripts": "TypographyCleanClipboard.js",
+                        "styles": "TypographyStyle.css"
                 }
         },
         "ResourceFileModulePaths": {
-                "localBasePath": "",
+                "localBasePath": "modules",
                 "remoteExtPath": "Typography"
         },
         "AutoloadClasses": {
