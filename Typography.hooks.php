@@ -211,13 +211,15 @@ class TypographyHooks
     {
         global $wgTypography;
 
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
         // Get the current NameSpace
-        $theCurrentNamespace = $out->getTitle()->getNamespace();
+        //$theCurrentNamespace = $out->getTitle()->getNamespace();
 
-        // Test whether the current NameSpace belongs to the Allowed NameSpaces
-        if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
+        //if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
             $out->addModules('TypographyScriptsAndStyles');
             return true;
-        }
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
+        //}
     }
 }
