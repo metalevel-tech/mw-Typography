@@ -30,7 +30,7 @@
                 "TypographyHooks": "Typography.hooks.php"
         },
         "Hooks": {
-                "ParserAfterTidy": "TypographyHooks::onParserAfterTidy",
+                "OutputPageBeforeHTML": "TypographyHooks::onOutputPageBeforeHTML",
                 "BeforePageDisplay": "TypographyHooks::onBeforePageDisplay"
         }
 }

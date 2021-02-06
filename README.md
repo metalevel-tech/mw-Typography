@@ -89,7 +89,6 @@ wfLoadExtension( 'Typography' );
 
 // Optionally apply your custom configuration
 $wgTypography['HyphenLanguages'] = array('bg', 'en-US', 'ru');
-$wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15', '20', '21');
 $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
 $wgTypography['Settings'] = array(
     'set_tags_to_ignore' => array('code', 'kbd', 'pre'),
@@ -100,6 +99,8 @@ $wgTypography['Settings'] = array(
     'set_min_before_hyphenation' => 2,
     'set_single_character_word_spacing' => false,
 );
+// Deprecated!
+//$wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15', '20', '21');
 ````
 
 * Note all settings added by `LocalSettings.php` will override the default values!

@@ -37,11 +37,12 @@ if (!defined('MEDIAWIKI')) {
     global $wgTypography;
     global $wgLanguageCode;
 
+    // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
     // Set the NameSpaces on which the extension will operate
     // Ref: https://www.mediawiki.org/wiki/Manual:Namespace#Built-in_namespaces
-    if (!$wgTypography['AllowedNameSpaces']) {
-        $wgTypography['AllowedNameSpaces'] = array('false', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
-    }
+    //if (!$wgTypography['AllowedNameSpaces']) {
+    //    $wgTypography['AllowedNameSpaces'] = array('false', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
+    //}
 
     // Get the Language Locales. If any locales are not provided via $wgTypography['HyphenLanguages'],
     // we will tray to autodetect the wiki's language and will apply some fixes as 'en'->'en-US'.
@@ -147,15 +148,21 @@ class TypographyHooks
      * This is the main function, the one that will process the content.
      * Ref: https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy
      */
-    public static function onParserAfterTidy( Parser &$parser, &$text )
+
+    // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
+    //public static function onParserAfterTidy( Parser &$parser, &$text )
+
+    public static function onOutputPageBeforeHTML( OutputPage $out, &$text )
     {
         global $wgTypography;
 
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
         // Get the current NameSpace
-        $theCurrentNamespace = $parser->getTitle()->getNamespace();
+        //$theCurrentNamespace = $parser->getTitle()->getNamespace();
 
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
         // Test whether the current NameSpace belongs to the Allowed NameSpaces
-        if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
+        //if (in_array($theCurrentNamespace, $wgTypography['AllowedNameSpaces'])) {
 
             // Load the main resources
             include_once __DIR__ . '/vendor/autoload.php';
@@ -192,7 +199,8 @@ class TypographyHooks
             // $text = $mwTypographyTypo->process($text, $mwTypographySettings);
 
             return true;
-        }
+        // Deprecated, since the main Hook is changed from ParserAfterTidy to OutputPageBeforeHTML!
+        //}
     }
 
     /**
