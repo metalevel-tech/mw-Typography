@@ -24,13 +24,15 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/). The current implementation of the [script](/modules) has a bug: When you copy text from `pre` tag, the new line characters are dismissed. The temporal solution is to copy the entire `pre` tag plus small portion of text from any surrounded tag `div`, `p`, etc.
 
-* **Name spaces limitation.** There is an array that defines the numerical values of the name spaces on which the extension should operate. You can setup the desired values within your `LocalSettings.php`. The default values are:
+* **Name spaces limitation. Deprecated, since the main Hook is changed from [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) to [OutputPageBeforeHTML](https://www.mediawiki.org/wiki/Manual:Hooks/OutputPageBeforeHTML)!** 
+
+  <s>There is an array that defines the numerical values of the name spaces on which the extension should operate. You can setup the desired values within your `LocalSettings.php`. The default values are:
 
   ````php
   $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
   ````
 
-  Please do not add MediaWiki's `Special:` pages (NS 8 and 9) to this array, because their processing time is too slow.
+  Please do not add MediaWiki's `Special:` pages (NS 8 and 9) to this array, because their processing time is too slow.</s>
 
 * **Compound words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contain `:`, like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the two parts will be processed properly and will be hyphenated. There is an identical option within the settings of the repository PHP-Typography, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
 
@@ -114,7 +116,7 @@ Requirements transcluded from [Code by Der Mundschenk & Cie. /wp-Typography](htt
 
 MediaWiki version compatibility:
 
-* The extension is tested with MediaWiki **1.32**, **1.33** and **1.34**. The hooks - [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) and [BeforePageDisplay](https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay) - used in the extension are available from version 1.5 and 1.7. According to that **MediaWiki 1.7** should be the oldest version that could use this extension. Currently, independently of the branch, the minimal verion is set, by the [`extension.json`](/extension.json) file, to 1.30.
+* The extension is tested with MediaWiki **1.32**, **1.33**, **1.34** and **1.35**. The hooks - <s>[ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy)</s> [OutputPageBeforeHTML](https://www.mediawiki.org/wiki/Manual:Hooks/OutputPageBeforeHTML) and [BeforePageDisplay](https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay) - used in the extension are available from version <s>1.5</s> 1.6 and 1.7. According to that **MediaWiki 1.7** should be the oldest version that could use this extension. Currently, independently of the branch, the minimal verion is set, by the [`extension.json`](/extension.json) file, to 1.30.
 
 * I will issue a branch of this extension after each MediaWiki's branch that I'm following on my production or test environment.
 
@@ -130,10 +132,10 @@ The extension is tested on a MediaWiki Family that supports Bulgarian, Russian a
 
 Here is a performance comparison between processing multilingual text (BG, RU, EN) with enabled or disabled Typography extension. You can see the performance difference is not so huge with a relatively large page that contains about 10k characters (which is about 5 printed pages).
 
-| NewPP limit report         | 380,000 chars | 380,000 **+Typo** | 10,000 chars | 10,000 **+Typo** |
-| ---                        | ---           | ---               | ---          | ---              |
-| CPU time usage  (seconds): | 0.147         | **3.581**         | 0.101        | **0.386**        |
-| Real time usage (seconds): | 0.975         | **4.521**         | 0.592        | **0.920**        |
+| Prerformance      | NewPP limit report CPU/Real time usage     | Language       | Browser total time |
+| ---               | ---                                        | ---            | ---                |
+| 160,000 chars     | 0.190 / 0.200 sec (160k chars / 2 Mb post) | Mixed BG/EN/RU | 1.8 sec            |
+| 160,000 **+Typo** | 0.226 / 0.308 sec (160k chars / 2 Mb post) | Mixed BG/EN/RU | 8.9 sec            |
 
 Note when the page is already rendered and loaded from the cache these are not the actual times.
 
