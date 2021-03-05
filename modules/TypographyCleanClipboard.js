@@ -53,49 +53,47 @@ jQuery( function( $ ) {
     }
 
     // From wp-Typography by Peter Putzer
-	if ( window.getSelection ) {
+    if ( window.getSelection ) {
 
-		document.addEventListener( 'copy', function() {
-
+        document.addEventListener( 'copy', function() {
             if ( getSelectionParentElement().tagName !== 'PRE' && (![ 'INPUT', 'TEXTAREA', 'PRE' ].includes(document.activeElement.tagName)) ) {
 
-		    	var
-    		    	sel        = window.getSelection(),
-	    		    ranges     = [],
-			    	rangeCount = sel.rangeCount,
-    			    i, shadow;
+                var
+                    sel        = window.getSelection(),
+                    ranges     = [],
+                    rangeCount = sel.rangeCount,
+                    i, shadow;
 
-	    		for ( i = 0; i < rangeCount; i++ ) {
-    	    		ranges[i] = sel.getRangeAt( i );
-	    	    }
+                for ( i = 0; i < rangeCount; i++ ) {
+                    ranges[i] = sel.getRangeAt( i );
+                }
 
-			    // Create new div containing cleaned HTML content
-    			shadow = $( '<div>', {
-        			style: { position: 'absolute', left: '-99999px' },
-	        		html: $( '<div></div>' ).append( sel.getRangeAt( 0 ).cloneContents() ).html().replace( /\u00AD/gi, '' ).replace( /\u200B/gi, '' )   // default action
+                // Create new div containing cleaned HTML content
+                shadow = $( '<div>', {
+                    style: { position: 'absolute', left: '-99999px' },
+                    html: $( '<div></div>' ).append( sel.getRangeAt( 0 ).cloneContents() ).html().replace( /\u00AD/gi, '' ).replace( /\u200B/gi, '' )   // default action
                             .replace( /(<span class=\"mw-editsection\">(<([^>]+)>).*<\/span>)/gi, '' )                                                  // skinTimeless
                             .replace( /(<div id=\"(mw-page-header-links|mw-site-navigation|mw-related-navigation)\">(<([^>]+)>).*<\/div>)/gi, '' )      // skinTimeless
-		        } );
+                    } );
 
-    			// Append to DOM
-        		$( 'body' ).append( shadow );
+                // Append to DOM
+                $( 'body' ).append( shadow );
 
-	        	// Select the children of our "clean" div
-		        sel.selectAllChildren( shadow[0] );
+                // Select the children of our "clean" div
+                sel.selectAllChildren( shadow[0] );
 
-    			// Clean up after copy
-        		window.setTimeout( function() {
+                // Clean up after copy
+                window.setTimeout( function() {
+                    // Remove div
+                    shadow.remove();
 
-	        		// Remove div
-		        	shadow.remove();
-
-			        // Restore selection
-			        sel.removeAllRanges();
-    				for ( i = 0; i < rangeCount; i++ ) {
-        				 sel.addRange( ranges[i] );
-	        		}
-		        }, 0 );
+                    // Restore selection
+                    sel.removeAllRanges();
+                    for ( i = 0; i < rangeCount; i++ ) {
+                        sel.addRange( ranges[i] );
+                    }
+                }, 0 );
             }
-		} );
-	}
+        } );
+    }
 } );
