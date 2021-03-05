@@ -57,7 +57,7 @@ jQuery( function( $ ) {
 
 		document.addEventListener( 'copy', function() {
 
-            if (getSelectionParentElement().tagName !== 'PRE') {
+            if ( getSelectionParentElement().tagName !== 'PRE' && (![ 'INPUT', 'TEXTAREA', 'PRE' ].includes(document.activeElement.tagName)) ) {
 
 		    	var
     		    	sel        = window.getSelection(),
