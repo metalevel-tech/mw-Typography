@@ -33,29 +33,30 @@
  * as apart of the Extension:mw-Typography
  */
 ( function ( $, mw ) {
-	'use strict';
-
-    // https://stackoverflow.com/questions/7215479/get-parent-element-of-a-selected-text
-    function getSelectionParentElement() {
-        var parentEl = null, sel;
-        if (window.getSelection) {
-            sel = window.getSelection();
-            if (sel.rangeCount) {
-                parentEl = sel.getRangeAt(0).commonAncestorContainer;
-                if (parentEl.nodeType != 1) {
-                    parentEl = parentEl.parentNode;
-                }
-            }
-        } else if ( (sel = document.selection) && sel.type != "Control") {
-            parentEl = sel.createRange().parentElement();
-        }
-        return parentEl;
-    }
+    'use strict';
 
     function doHyphensClean() {
+        // https://stackoverflow.com/questions/7215479/get-parent-element-of-a-selected-text
+        function getSelectionParentElement() {
+            var parentEl = null, sel;
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.rangeCount) {
+                    parentEl = sel.getRangeAt(0).commonAncestorContainer;
+                    if (parentEl.nodeType != 1) {
+                        parentEl = parentEl.parentNode;
+                    }
+                }
+            } else if ( (sel = document.selection) && sel.type != "Control") {
+                parentEl = sel.createRange().parentElement();
+            }
+            return parentEl;
+        }
+
         // From wp-Typography by Peter Putzer
         if ( window.getSelection ) {
             document.addEventListener( 'copy', function() {
+                // Prevent processing of some HTML tags
                 if ( getSelectionParentElement().tagName !== 'PRE' && (![ 'INPUT', 'TEXTAREA', 'PRE' ].includes(document.activeElement.tagName)) ) {
 
                     var
