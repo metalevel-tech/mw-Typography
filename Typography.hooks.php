@@ -183,8 +183,8 @@ class TypographyHooks
             // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
             if ($wgTypography['ColonWords']) {
                 foreach ($wgTypography['ColonWords'] as $colonWord) {
-                    $colonWord_replace_1 = $colonWord . ' ';
-                    $colonWord_replace_2 = $colonWord . '  ';
+                    $colonWord_replace_1 = $colonWord . '&shy;';
+                    $colonWord_replace_2 = $colonWord . '&shy;&shy;';
                     $text = str_replace($colonWord, $colonWord_replace_1, $text);
                     $text = str_replace($colonWord_replace_2, $colonWord_replace_1, $text);
                 }

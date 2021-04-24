@@ -21,6 +21,7 @@ class ComposerStaticInit1588e8fed4a6a042d82cba46c3f6d42e
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'PHP_Typography\\Bin\\File_Operations' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/bin/class-file-operations.php',
         'PHP_Typography\\Bin\\Pattern_Converter' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/bin/class-pattern-converter.php',
         'PHP_Typography\\DOM' => __DIR__ . '/..' . '/mundschenk-at/php-typography/src/class-dom.php',

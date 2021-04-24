@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'PHP_Typography\\Bin\\File_Operations' => $vendorDir . '/mundschenk-at/php-typography/src/bin/class-file-operations.php',
     'PHP_Typography\\Bin\\Pattern_Converter' => $vendorDir . '/mundschenk-at/php-typography/src/bin/class-pattern-converter.php',
     'PHP_Typography\\DOM' => $vendorDir . '/mundschenk-at/php-typography/src/class-dom.php',

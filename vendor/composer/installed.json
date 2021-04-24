@@ -1,134 +1,140 @@
-[
-    {
-        "name": "masterminds/html5",
-        "version": "2.7.4",
-        "version_normalized": "2.7.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Masterminds/html5-php.git",
-            "reference": "9227822783c75406cfe400984b2f095cdf03d417"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/9227822783c75406cfe400984b2f095cdf03d417",
-            "reference": "9227822783c75406cfe400984b2f095cdf03d417",
-            "shasum": ""
-        },
-        "require": {
-            "ext-ctype": "*",
-            "ext-dom": "*",
-            "ext-libxml": "*",
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "^4.8.35"
-        },
-        "time": "2020-10-01T13:52:52+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.7-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Masterminds\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Matt Butcher",
-                "email": "technosophos@gmail.com"
+{
+    "packages": [
+        {
+            "name": "masterminds/html5",
+            "version": "2.7.4",
+            "version_normalized": "2.7.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Masterminds/html5-php.git",
+                "reference": "9227822783c75406cfe400984b2f095cdf03d417"
             },
-            {
-                "name": "Matt Farina",
-                "email": "matt@mattfarina.com"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/9227822783c75406cfe400984b2f095cdf03d417",
+                "reference": "9227822783c75406cfe400984b2f095cdf03d417",
+                "shasum": ""
             },
-            {
-                "name": "Asmir Mustafic",
-                "email": "goetas@gmail.com"
-            }
-        ],
-        "description": "An HTML5 parser and serializer.",
-        "homepage": "http://masterminds.github.io/html5-php",
-        "keywords": [
-            "HTML5",
-            "dom",
-            "html",
-            "parser",
-            "querypath",
-            "serializer",
-            "xml"
-        ]
-    },
-    {
-        "name": "mundschenk-at/php-typography",
-        "version": "v6.6.0",
-        "version_normalized": "6.6.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mundschenk-at/php-typography.git",
-            "reference": "67af39c936751f96a959b9bf211044512675283c"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mundschenk-at/php-typography/zipball/67af39c936751f96a959b9bf211044512675283c",
-            "reference": "67af39c936751f96a959b9bf211044512675283c",
-            "shasum": ""
-        },
-        "require": {
-            "ext-mbstring": "*",
-            "ext-pcre": "*",
-            "masterminds/html5": "^2.5.0",
-            "php": ">=5.6.0"
-        },
-        "require-dev": {
-            "brain/monkey": "^2.2.0",
-            "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
-            "ext-curl": "*",
-            "mundschenk-at/phpunit-cross-version": "dev-master",
-            "phpbench/phpbench": "^0.17||^1.0@dev",
-            "phpcompatibility/php-compatibility": "^9.0",
-            "phpstan/phpstan": "^0.12",
-            "phpunit/phpunit": "5.*||6.*||7.*|8.*|9.*",
-            "squizlabs/php_codesniffer": "^3",
-            "wp-coding-standards/wpcs": "^2.0"
-        },
-        "time": "2020-04-05T12:14:12+00:00",
-        "bin": [
-            "src/bin/update-patterns.php",
-            "src/bin/update-iana.php"
-        ],
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "src/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0-or-later"
-        ],
-        "authors": [
-            {
-                "name": "Peter Putzer",
-                "email": "github@mundschenk.at",
-                "homepage": "https://code.mundschenk.at",
-                "role": "Developer"
+            "require": {
+                "ext-ctype": "*",
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": ">=5.3.0"
             },
-            {
-                "name": "Jeffrey D. King",
-                "email": "jeff.king@weathersource.com",
-                "homepage": "http://kingdesk.com",
-                "role": "Original author"
-            }
-        ],
-        "description": "A PHP library for improving your web typography"
-    }
-]
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "time": "2020-10-01T13:52:52+00:00",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Masterminds\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matt Butcher",
+                    "email": "technosophos@gmail.com"
+                },
+                {
+                    "name": "Matt Farina",
+                    "email": "matt@mattfarina.com"
+                },
+                {
+                    "name": "Asmir Mustafic",
+                    "email": "goetas@gmail.com"
+                }
+            ],
+            "description": "An HTML5 parser and serializer.",
+            "homepage": "http://masterminds.github.io/html5-php",
+            "keywords": [
+                "HTML5",
+                "dom",
+                "html",
+                "parser",
+                "querypath",
+                "serializer",
+                "xml"
+            ],
+            "install-path": "../masterminds/html5"
+        },
+        {
+            "name": "mundschenk-at/php-typography",
+            "version": "v6.6.0",
+            "version_normalized": "6.6.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mundschenk-at/php-typography.git",
+                "reference": "67af39c936751f96a959b9bf211044512675283c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mundschenk-at/php-typography/zipball/67af39c936751f96a959b9bf211044512675283c",
+                "reference": "67af39c936751f96a959b9bf211044512675283c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-pcre": "*",
+                "masterminds/html5": "^2.5.0",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "brain/monkey": "^2.2.0",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
+                "ext-curl": "*",
+                "mundschenk-at/phpunit-cross-version": "dev-master",
+                "phpbench/phpbench": "^0.17||^1.0@dev",
+                "phpcompatibility/php-compatibility": "^9.0",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "5.*||6.*||7.*|8.*|9.*",
+                "squizlabs/php_codesniffer": "^3",
+                "wp-coding-standards/wpcs": "^2.0"
+            },
+            "time": "2020-04-05T12:14:12+00:00",
+            "bin": [
+                "src/bin/update-patterns.php",
+                "src/bin/update-iana.php"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Putzer",
+                    "email": "github@mundschenk.at",
+                    "homepage": "https://code.mundschenk.at",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Jeffrey D. King",
+                    "email": "jeff.king@weathersource.com",
+                    "homepage": "http://kingdesk.com",
+                    "role": "Original author"
+                }
+            ],
+            "description": "A PHP library for improving your web typography",
+            "install-path": "../mundschenk-at/php-typography"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
