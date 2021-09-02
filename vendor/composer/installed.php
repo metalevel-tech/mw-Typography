@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'a1f0b855fc1280c969d6c6a2535b182eedeb75eb',
+    'reference' => '59cde006069e83b531e61fb7e45d577b1f0084b1',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,16 +18,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'a1f0b855fc1280c969d6c6a2535b182eedeb75eb',
+      'reference' => '59cde006069e83b531e61fb7e45d577b1f0084b1',
     ),
     'masterminds/html5' => 
     array (
-      'pretty_version' => '2.7.4',
-      'version' => '2.7.4.0',
+      'pretty_version' => '2.7.5',
+      'version' => '2.7.5.0',
       'aliases' => 
       array (
       ),
-      'reference' => '9227822783c75406cfe400984b2f095cdf03d417',
+      'reference' => 'f640ac1bdddff06ea333a920c95bbad8872429ab',
     ),
     'mundschenk-at/php-typography' => 
     array (

@@ -56,6 +56,21 @@
         // From wp-Typography by Peter Putzer
         if ( window.getSelection ) {
             document.addEventListener( 'copy', function() {
+
+                // Return (break the function) if it is not a 'view' mode
+                if ( ve.init !== undefined ) {
+                    // https://www.mediawiki.org/wiki/VisualEditor/Gadgets#Code_snippets
+                    var surface = ve.init.target.getSurface();
+                    if ( surface !== undefined && surface.getMode() === 'visual' ) {
+                        return;
+                    } else if ( surface !== undefined && surface.getMode() === 'source' ) {
+                        return;
+                    }
+                } else if ( mw.config.get( 'wgAction' ) !== 'view' ) {
+                    // https://www.mediawiki.org/wiki/Manual:Interface/JavaScript
+                    return;
+                }
+
                 // Prevent processing of some HTML tags
                 if ( getSelectionParentElement().tagName !== 'PRE' && (![ 'INPUT', 'TEXTAREA', 'PRE' ].includes(document.activeElement.tagName)) ) {
 
@@ -99,9 +114,7 @@
         }
     }
 
-    // Do the hyphens clean
-    var typoAction  = mw.config.get( 'wgAction' );
-    if ( typoAction === 'view' ) {
-        mw.hook( 'wikipage.categories' ).add( doHyphensClean );
-    }
+    //mw.hook( 'wikipage.categories' ).add( doHyphensClean() );
+    mw.hook( 'wikipage.content' ).add( doHyphensClean() );
+
 }( jQuery, mediaWiki ) );
