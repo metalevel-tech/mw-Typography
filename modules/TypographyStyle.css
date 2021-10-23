@@ -2,7 +2,7 @@
 body.action-view .mw-body {
     text-align: justify;
 }
-**/
+
 
 body.action-view .mw-body p,
 body.action-view .mw-body li,
@@ -18,12 +18,12 @@ body.action-view .mw-body h5,
 body.action-view .mw-body h6 {
     text-align: left;
 }
-
+**/
 /**
 body.action-view .mw-body #toc li {
     text-align: left;
 }
-**/
+
 
 @media print {
 
@@ -34,3 +34,4 @@ body.action-view .mw-body #toc li {
 	}
 
 }
+**/

@@ -55,11 +55,14 @@ if (!defined('MEDIAWIKI')) {
         }
     }
 
+    /**
+     * Read the comment at line 187
     // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
     // LocalSettings.php example: $wgTypography['ColonWords'] = array('Категория:', 'Category:');
     if (!isset($wgTypography['ColonWords'])) {
         $wgTypography['ColonWords'] = false;
     }
+    **/
 
     // Default settings for PHP-Typography
     // Ref: vendor/mundschenk-at/php-typography/src/class-settings.php   Line: 393
@@ -71,11 +74,11 @@ if (!defined('MEDIAWIKI')) {
 
         // Smart characters.
         'set_smart_quotes' => false,
-        'set_smart_quotes_primary' => 'not_set',
-        'set_smart_quotes_secondary' => 'not_set',
+        'set_smart_quotes_primary' => 'not_set', // semi auto set before text process below
+        'set_smart_quotes_secondary' => 'not_set', // semi auto set before text process below
         'set_smart_quotes_exceptions' => 'not_set',
         'set_smart_dashes' => false,
-        'set_smart_dashes_style' => 'not_set',
+        'set_smart_dashes_style' => 'not_set', // 'traditionalUS', 'international', 'internationalNoHairSpaces', (https://type.today/en/journal/spaces)
         'set_smart_ellipses' => false,
         'set_smart_diacritics' => false,
         'set_diacritic_language' => 'not_set',
@@ -180,6 +183,11 @@ class TypographyHooks
             // Process the content
             $mwTypographyTypo = new \PHP_Typography\PHP_Typography();
 
+            /**
+             * Such support is added in a better way by modifying line 74 of
+             * mundschenk-at/php-typography/src/fixes/token-fixes/class-hyphenate-compounds-fix.php
+             * '/(-)/' >> '/(-|\:)/'
+             *
             // Add support for 'compound words', that contains ':', like as: Категория:Файлове, Category:Files - A better solution is needed!
             if ($wgTypography['ColonWords']) {
                 foreach ($wgTypography['ColonWords'] as $colonWord) {
@@ -189,10 +197,17 @@ class TypographyHooks
                     $text = str_replace($colonWord_replace_2, $colonWord_replace_1, $text);
                 }
             }
+            **/
 
             // Process the content multi language, for each language
             foreach ($wgTypography['HyphenLanguages'] as $language) {
                 $mwTypographySettings->set_hyphenation_language($language);
+                
+                if ($language === 'bg' || $language === 'ru') {
+                    $mwTypographySettings->set_smart_quotes_primary('doubleLow9Reversed');
+                    $mwTypographySettings->set_smart_quotes_secondary('singleLow9Reversed');
+                }
+
                 $text = $mwTypographyTypo->process($text, $mwTypographySettings);
             }
             // Process the content for single language

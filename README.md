@@ -24,7 +24,7 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/). The current implementation of the [script](/modules) has a bug: When you copy text from `pre` tag, the new line characters are dismissed. The temporal solution is to copy the entire `pre` tag plus small portion of text from any surrounded tag `div`, `p`, etc.
 
-* **Name spaces limitation. Deprecated, since the main Hook is changed from [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) to [OutputPageBeforeHTML](https://www.mediawiki.org/wiki/Manual:Hooks/OutputPageBeforeHTML)!** 
+* **Name spaces limitation. Deprecated, since the main Hook is changed from [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) to [OutputPageBeforeHTML](https://www.mediawiki.org/wiki/Manual:Hooks/OutputPageBeforeHTML)!**
 
   <s>There is an array that defines the numerical values of the name spaces on which the extension should operate. You can setup the desired values within your `LocalSettings.php`. The default values are:
 
@@ -89,7 +89,6 @@ wfLoadExtension( 'Typography' );
 
 // Optionally apply your custom configuration
 $wgTypography['HyphenLanguages'] = array('bg', 'en-US', 'ru');
-$wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
 $wgTypography['Settings'] = array(
     'set_tags_to_ignore' => array('code', 'kbd', 'pre'),
     'set_classes_to_ignore' => array( 'vcard', 'noTypo', 'mw-ui-button', 'mw-whatlinkshere-list'),
@@ -100,10 +99,13 @@ $wgTypography['Settings'] = array(
     'set_single_character_word_spacing' => false,
 );
 // Deprecated!
-//$wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15', '20', '21');
+// $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15', '20', '21');
+// $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
 ````
 
 * Note all settings added by `LocalSettings.php` will override the default values!
+
+* The option `$wgTypography['ColonWords']` is replaced by a litle moddification in the file [class-hyphenate-compounds-fix.php](vendor/mundschenk-at/php-typography/src/fixes/token-fixes/class-hyphenate-compounds-fix.php), at line `71`, where the regexp is changed from `/(-)/` to `/(-|\:)/`.
 
 Navigate to `Special:Version` to check whether `Extension:Typography` is enabled. It should works now.
 
@@ -146,5 +148,5 @@ Special thanks to [Peter Putzer](https://code.mundschenk.at/), the author of [wp
 
 ## Work in progress notes
 
-* https://www.mediawiki.org/wiki/Manual:Hooks
+* <https://www.mediawiki.org/wiki/Manual:Hooks>
 * Currently used hooks can't process the StructuredDiscussions (Flow) pages - [reference](https://www.mediawiki.org/wiki/Topic:V2lkq91o5myfo6r0)
