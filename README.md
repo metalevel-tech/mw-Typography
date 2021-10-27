@@ -34,13 +34,13 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
   Please do not add MediaWiki's `Special:` pages (NS 8 and 9) to this array, because their processing time is too slow.</s>
 
-* **Compound words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contain `:`, like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the two parts will be processed properly and will be hyphenated. There is an identical option within the settings of the repository PHP-Typography, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
+* <s>**Component words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contain `:`, like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the two parts will be processed properly and will be hyphenated. There is an identical option within the settings of the repository PHP-Typography, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
 
    ````php
    $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
    ````
 
-   If you want to use the native PHP-Typography's option read the next section.
+   If you want to use the native PHP-Typography's option read the next section.</s>
 
 * **PHP-Typography settings.** All settings of the main repository PHP-Typography are available via the array `$wgTypography['Settings']` that should be added to your `LocalSettings.php` file in a way as this:
 
