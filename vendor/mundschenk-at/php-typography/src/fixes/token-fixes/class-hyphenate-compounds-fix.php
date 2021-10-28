@@ -71,7 +71,7 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 		// Hyphenate compound words.
 		foreach ( $tokens as $key => $word_token ) {
 			$component_words = [];
-			foreach ( \preg_split( '/(-|\:)/', $word_token->value, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
+			foreach ( \preg_split( '/(-|\:|\/)/', $word_token->value, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
 				$component_words[] = new Text_Parser\Token( $word_part, Text_Parser\Token::WORD );
 			}
 			

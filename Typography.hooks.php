@@ -203,7 +203,7 @@ class TypographyHooks
             foreach ($wgTypography['HyphenLanguages'] as $language) {
                 $mwTypographySettings->set_hyphenation_language($language);
                 
-                if ($language === 'bg' || $language === 'ru') {
+                if ($language === 'bg') {
                     $mwTypographySettings->set_smart_quotes_primary('doubleLow9Reversed');
                     $mwTypographySettings->set_smart_quotes_secondary('singleLow9Reversed');
                 }
