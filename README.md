@@ -64,8 +64,8 @@ Clone (download) the extension's repository in your MediaWiki `$IP/extensions` d
 
 ````bash
 cd $IP/extensions
-sudo git clone https://github.com/pa4080/mw-Typography.git Typography # HTTPS
-sudo git clone git@github.com:pa4080/mw-Typography.git Typography     # SSH
+sudo git clone https://github.com/metalevel-ad/mw-Typography.git Typography # HTTPS
+sudo git clone git@github.com:metalevel-ad/mw-Typography.git Typography     # SSH
 
 cd $IP/extensions/Typography
 git branch -a
