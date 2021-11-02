@@ -1,11 +1,11 @@
 {
         "name": "Typography",
         "author": ["Spas Z. Spasov"],
-        "url": "https://github.com/pa4080/mw-Typography",
+        "url": "https://github.com/metalevel-tech/mw-Typography",
         "version": "0.0.1 beta",
         "license-name": "GPL-3.0+",
         "type": "other",
-        "description": "For more information: https://github.com/pa4080/mw-Typography",
+        "description": "For more information: https://github.com/metalevel-tech/mw-Typography",
         "descriptionmsg": "typography-desc",
         "manifest_version": 1,
         "requires": {
