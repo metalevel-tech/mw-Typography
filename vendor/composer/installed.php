@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'c0454ae390f3a4bca78f90dbf89f7e700cb442d6',
+    'reference' => 'ef60d9635637ec89e96d3c8725e08d079c0c0274',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'c0454ae390f3a4bca78f90dbf89f7e700cb442d6',
+      'reference' => 'ef60d9635637ec89e96d3c8725e08d079c0c0274',
     ),
     'masterminds/html5' => 
     array (
