@@ -117,5 +117,6 @@
     // mw.hook('wikipage.categories').add(doHyphensClean());
     // mw.hook('wikipage.content').add(doHyphensClean());
     // REL1_38: mw.hook() doesn't work here correctly here - I should read the Docs 
+    // https://www.mediawiki.org/wiki/ResourceLoader/Core_modules
     doHyphensClean();
 })();
