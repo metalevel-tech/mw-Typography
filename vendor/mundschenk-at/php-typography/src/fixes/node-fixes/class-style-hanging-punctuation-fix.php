@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,12 +44,16 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * CSS class for single-width punctuation marks.
 	 *
+	 * @deprecated 6.7.0
+	 *
 	 * @var string
 	 */
 	protected $push_single_class;
 
 	/**
 	 * CSS class for double-width punctuation marks.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @var string
 	 */
@@ -58,12 +62,16 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * CSS class for single-width punctuation marks.
 	 *
+	 * @deprecated 6.7.0
+	 *
 	 * @var string
 	 */
 	protected $pull_single_class;
 
 	/**
 	 * CSS class for double-width punctuation marks.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @var string
 	 */
@@ -72,20 +80,20 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * An array of replacment arrays (indexed by the "$block" flag).
 	 *
-	 * @var array
+	 * @var array<int,string[]>
 	 */
 	protected $replacements;
 
 
 	// Hanging punctuation.
-	const _DOUBLE_HANGING_PUNCTUATION =
+	private const DOUBLE_HANGING_PUNCTUATION =
 		'"' .
 		U::DOUBLE_QUOTE_OPEN .
 		U::DOUBLE_QUOTE_CLOSE .
 		U::DOUBLE_LOW_9_QUOTE .
 		U::DOUBLE_PRIME; // requires modifiers: x (multiline pattern) u (utf8).
 
-	const _SINGLE_HANGING_PUNCTUATION =
+	private const SINGLE_HANGING_PUNCTUATION =
 		"'" .
 		U::SINGLE_QUOTE_OPEN .
 		U::SINGLE_QUOTE_CLOSE .
@@ -94,10 +102,10 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
 
 	// Style hanging punctuation.
-	const STYLE_DOUBLE         = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_SINGLE         = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_DOUBLE         = '/(\s)([' . self::DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_SINGLE         = '/(\s)([' . self::SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
 
 	/**
 	 * Creates a new classes dependent fix.
@@ -111,23 +119,23 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	public function __construct( $push_single_class, $push_double_class, $pull_single_class, $pull_double_class, $feed_compatible = false ) {
 		parent::__construct( [ $pull_single_class, $pull_double_class ], $feed_compatible );
 
-		$this->push_single_class = $push_single_class;
-		$this->push_double_class = $push_double_class;
-		$this->pull_single_class = $pull_single_class;
-		$this->pull_double_class = $pull_double_class;
+		$escaped_style_double = RE::escape_tags( "$1<span class=\"{$push_double_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_double_class}\">$2</span>\$3" );
+		$escaped_style_single = RE::escape_tags( "$1<span class=\"{$push_single_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_single_class}\">$2</span>$3" );
 
 		$this->replacements = [
-			false => [
-				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
-				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
-				RE::escape_tags( '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
-				RE::escape_tags( '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			// Non-block elements.
+			[
+				$escaped_style_double, // STYLE_DOUBLE.
+				$escaped_style_single, // STYLE_SINGLE.
+				RE::escape_tags( "<span class=\"{$push_double_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_double_class}\">$1</span>$2" ), // STYLE_INITIAL_DOUBLE.
+				RE::escape_tags( "<span class=\"{$push_single_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_single_class}\">$1</span>$2" ), // STYLE_INITIAL_SINGLE.
 			],
-			true  => [
-				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
-				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
-				RE::escape_tags( '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
-				RE::escape_tags( '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			// Block eleemnts.
+			[
+				$escaped_style_double, // STYLE_DOUBLE.
+				$escaped_style_single, // STYLE_SINGLE.
+				RE::escape_tags( "<span class=\"{$pull_double_class}\">$1</span>$2" ), // STYLE_INITIAL_DOUBLE.
+				RE::escape_tags( "<span class=\"{$pull_single_class}\">$1</span>$2" ), // STYLE_INITIAL_SINGLE.
 			],
 		];
 	}
@@ -154,7 +162,12 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
 		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
-		$f              = Strings::functions( $node_data );
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
 
 		$node_data = \preg_replace(
 			[

@@ -19,7 +19,7 @@
     ],
 
     "require": {
-        "php": ">=5.6.0",
+        "php": ">=7.4.0",
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "masterminds/html5": "^2.5.0"
@@ -31,10 +31,12 @@
         "squizlabs/php_codesniffer": "^3",
         "wp-coding-standards/wpcs": "^2.0",
         "phpcompatibility/php-compatibility": "^9.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
-        "phpstan/phpstan": "^0.12",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "phpstan/phpstan": "^1.9",
         "phpbench/phpbench": "^0.17||^1.0@dev",
-        "mundschenk-at/phpunit-cross-version": "dev-master"
+        "mundschenk-at/phpunit-cross-version": "dev-master",
+        "phpstan/phpstan-mockery": "^1.1",
+        "phpstan/extension-installer": "^1.2"
     },
 
     "autoload": {
@@ -66,18 +68,24 @@
             "phpunit --testsuite PHP-Typography"
         ],
         "coverage": [
-            "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
+            "XDEBUG_MODE=coverage phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
         ],
         "check": [
             "@phpcs",
             "@phpstan"
         ],
         "phpcs": [
-            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+            "phpcs -p -s src/ tests/ --ignore=tests/benchmarks,tests/coverage --extensions=php"
         ],
         "phpstan": [
             "phpstan analyse --configuration=.phpstan.neon --level=7 --ansi src/",
-            "phpstan analyse --configuration=.phpstan.neon --level=6 --ansi tests/"
+            "phpstan analyse --configuration=.phpstan.neon --level=2 --ansi tests/"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
     }
 }
