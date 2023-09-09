@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
 namespace PHP_Typography\Bin;
 
-use PHP_Typography\Strings;
+use PHP_Typography\U;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.
@@ -95,10 +95,7 @@ class Pattern_Converter {
 					'\p{Thai}',
 
 					// Very special characters.
-					'[' . Strings::uchr(
-						8204, // ZERO WIDTH NON-JOINER.
-						8205  // ZERO WIDTH JOINER.
-					) . ']',
+					'[' . U::ZERO_WIDTH_JOINER . U::ZERO_WIDTH_NON_JOINER . ']',
 				]
 			)
 		. ')';
@@ -124,7 +121,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_sequence( $pattern ) {
-		$characters = Strings::mb_str_split( \str_replace( '.', '_', $pattern ) );
+		$characters = \mb_str_split( \str_replace( '.', '_', $pattern ) );
 		$result     = [];
 
 		foreach ( $characters as $index => $chr ) {
@@ -158,13 +155,13 @@ class Pattern_Converter {
 	/**
 	 * Format hyphenation pattern file for wp-Typography.
 	 *
-	 * @param array $patterns An array of TeX hyphenation patterns.
-	 * @param array $exceptions {
+	 * @param string[] $patterns An array of TeX hyphenation patterns.
+	 * @param string[] $exceptions {
 	 *      An array of hyphenation exceptions.
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @param array $comments An array of TeX comments.
+	 * @param string[] $comments An array of TeX comments.
 	 *
 	 * @return string
 	 */
@@ -193,81 +190,83 @@ class Pattern_Converter {
 			'patterns'    => $pattern_mapping,
 		];
 
-		return \json_encode( $json_results, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+		return (string) \json_encode( $json_results, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
 	 * Try to match squences of TeX hyphenation exceptions.
 	 *
-	 * @param string $line A line from the TeX pattern file.
-	 * @param array  $exceptions {
+	 * @param string   $line A line from the TeX pattern file.
+	 * @param string[] $exceptions {
 	 *      An array of hyphenation exceptions.
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @param int    $line_no  Optional. Line number. Default 0.
+	 * @param int      $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the exception line is malformed.
 	 *
 	 * @return bool
 	 */
 	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
-		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			$exceptions[] = $matches[1];
-			return false;
-		} if ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		$continue_reading_exceptions = true;
+
+		if ( \preg_match( "/^\s*({$this->word_class}+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
+			$exceptions[]                = $matches[1];
+			$continue_reading_exceptions = false;
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
 			$this->match_exceptions( $matches[1], $exceptions, $line_no );
-			return false;
+			$continue_reading_exceptions = false;
 		} elseif ( \preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			return false;
-		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+			$continue_reading_exceptions = false;
+		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
 			}
-		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
-			// Ignore comments and whitespace in exceptions.
-			return true;
-		} else {
+		} elseif ( ! \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+			// Ignore comments and whitespace in exceptions, but everything else
+			// unaccounted for at this point means we should abort.
 			throw new \RangeException( "Error: unknown exception $line on line $line_no\n" );
 		}
 
-		return true;
+		return $continue_reading_exceptions;
 	}
 
 	/**
 	 * Try to match a pattern.
 	 *
-	 * @param string $line     A line from the TeX pattern file.
-	 * @param array  $patterns An array of patterns.
-	 * @param int    $line_no  Optional. Line number. Default 0.
+	 * @param string   $line     A line from the TeX pattern file.
+	 * @param string[] $patterns An array of patterns.
+	 * @param int      $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
-	 * @return bool
+	 * @return bool Whether the parser should stay in "reading patterns" mode.
 	 */
 	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
-		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			$patterns[] = $matches[1];
-			return false;
+		$continue_reading_patterns = true;
+
+		if ( \preg_match( "/^\s*({$this->word_class}+)\s*\}\s*(?:%.*)?$/u", $line, $matches ) ) {
+			$patterns[]                = $matches[1];
+			$continue_reading_patterns = false;
 		} elseif ( \preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			return false;
-		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+			$continue_reading_patterns = false;
+		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
-		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
-			// Ignore comments and whitespace in patterns.
-			return true;
-		} else {
+		} elseif ( ! \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+			// Ignore comments and whitespace in patterns, but everything else
+			// unaccounted for at this point means we should abort.
 			throw new \RangeException( "Error: unknown pattern $line on line $line_no\n" );
 		}
 
-		return true;
+		return $continue_reading_patterns;
 	}
 
 	/**
@@ -299,11 +298,10 @@ class Pattern_Converter {
 	 *
 	 * @param  string $line A line (fragment).
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
 	private static function split_at_whitespace( $line ) {
-		// We can safely cast to an array here, as long as $line convertible to a string.
-		return (array) \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
+		return \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- We can safely assume an array here, as long as $line convertible to a string.
 	}
 
 	/**
@@ -337,10 +335,10 @@ class Pattern_Converter {
 	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
 	 * @param string[] $comments   Extracted comments lines. Passed by reference.
 	 *
-	 * @throws \RangeException Thrown when a line cannot be parsed at all.
-	 * @throws \RuntimeException Thrown when file does not exist.
+	 * @throws \RangeException   Thrown when a line cannot be parsed at all.
+	 * @throws \RuntimeException Thrown when file does not exist or is not readable.
 	 */
-	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) {
+	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) : void {
 		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
 			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
 		}
@@ -355,9 +353,15 @@ class Pattern_Converter {
 		$file    = new \SplFileObject( $url );
 		$line_no = 0;
 		while ( ! $file->eof() ) {
+			// Read the next line.
 			$line = $file->fgets();
+			if ( ! \is_string( $line ) ) {
+				throw new \RuntimeException( "Error reading file '{$url}'\n" );
+			}
+
 			$line_no++;
 
+			// Parse the line.
 			if ( $reading_patterns ) {
 				$reading_patterns = $this->match_patterns( $this->expand_macros( $line, $macros ), $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
@@ -370,9 +374,6 @@ class Pattern_Converter {
 					$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
 				} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
 					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
-				} elseif ( \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
-					// Ignore this line completely.
-					continue;
 				} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
 					// Add a macro definition.
 					$macros[ $matches[1] ] = $matches[2];
@@ -380,11 +381,13 @@ class Pattern_Converter {
 					// Add a macro definition and expand any contained macros.
 					$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
 				} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
-					// Treat other commands as comments unless we are matching exceptions or patterns.
-					$comments[] = $line;
-				} elseif ( \preg_match( '/^\s*$/u', $line, $matches ) ) {
-					continue; // Do nothing.
-				} else {
+					// Ignore \endinput.
+					if ( ! \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
+						// Treat other commands as comments unless we are matching exceptions or patterns.
+						$comments[] = $line;
+					}
+				} elseif ( ! \preg_match( '/^\s*$/u', $line, $matches ) ) {
+					// If this was not simply whitespace, we are in trouble.
 					throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
 				}
 			}

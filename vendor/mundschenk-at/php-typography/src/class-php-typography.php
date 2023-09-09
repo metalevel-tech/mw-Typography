@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -150,7 +150,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) || \in_array( 'h2', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) ) ) {
+		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', $settings['ignoreTags'], true ) || \in_array( 'h2',  $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
 
@@ -161,25 +161,39 @@ class PHP_Typography {
 		$dom = $this->parse_html( $html5_parser, $html, $settings, $body_classes );
 
 		// Abort if there were parsing errors.
-		if ( ! $dom instanceof \DOMDocument || ! $dom->hasChildNodes() ) {
-			return $html;
+		if ( $dom instanceof \DOMDocument && $dom->hasChildNodes() ) {
+
+			// Retrieve the document body.
+			$body_node = $dom->getElementsByTagName( 'body' )->item( 0 );
+			if ( $body_node instanceof \DOMElement ) {
+
+				// Process text nodes in the document body.
+				$this->process_textnodes_internal( $body_node, $fixer, $settings, $is_title );
+
+				return $html5_parser->saveHTML( $body_node->childNodes );
+			}
 		}
 
-		// Query some nodes in the DOM.
-		$xpath     = new \DOMXPath( $dom );
-		$body_node = $xpath->query( '/html/body' )->item( 0 );
+		return $html;
+	}
 
-		// Abort if we could not retrieve the body node.
-		// This should be refactored to use exceptions in a future version.
-		if ( ! $body_node instanceof \DOMNode ) {
-			return $html;
-		}
-
+	/**
+	 * Processes the text nodes below the <body> node.
+	 *
+	 * @since 6.7.0
+	 *
+	 * @param \DOMNode $body_node  The body node containing the HTML fragment to process.
+	 * @param callable $fixer      A callback that applies typography fixes to a single textnode.
+	 * @param Settings $settings   A settings object.
+	 * @param bool     $is_title   A flag indicating whether the HTML fragment in the DOM is a title.
+	 */
+	private function process_textnodes_internal( \DOMNode $body_node, callable $fixer, Settings $settings, bool $is_title ) : void {
 		// Get the list of tags that should be ignored.
+		$xpath          = new \DOMXPath( $body_node->ownerDocument );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
-		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) {
+		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) { // @phpstan-ignore-line -- The query is valid.
 			if (
 				// One of the ancestors should be ignored.
 				self::arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ||
@@ -195,7 +209,11 @@ class PHP_Typography {
 			// Apply fixes.
 			$fixer( $textnode, $settings, $is_title );
 
-			// Until now, we've only been working on a textnode: HTMLify result.
+			/**
+			 * Until now, we've only been working on a textnode: HTMLify result.
+			 *
+			 * @var string $new
+			 */
 			$new = $textnode->data;
 
 			// Replace original node (if anthing was changed).
@@ -203,18 +221,18 @@ class PHP_Typography {
 				$this->replace_node_with_html( $textnode, $settings->apply_character_mapping( $new ) );
 			}
 		}
-
-		return $html5_parser->saveHTML( $body_node->childNodes );
 	}
 
 	/**
 	 * Determines whether two object arrays intersect. The second array is expected
 	 * to use the spl_object_hash for its keys.
 	 *
-	 * @param array $array1 The keys are ignored.
-	 * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 * @template T
 	 *
-	 * @return boolean
+	 * @param array<T> $array1 The keys are ignored.
+	 * @param array<T> $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 *
+	 * @return bool
 	 */
 	protected static function arrays_intersect( array $array1, array $array2 ) {
 		foreach ( $array1 as $value ) {
@@ -303,13 +321,13 @@ class PHP_Typography {
 		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
-			$query_parts[] = '//' . \implode( ' | //', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'] );
+			$query_parts[] = '//' . \implode( ' | //', $settings['ignoreTags'] );
 		}
 		if ( ! empty( $settings['ignoreClasses'] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", /** Array. @scrutinizer ignore-type */ $settings['ignoreClasses'] ) . " ')]";
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $settings['ignoreIDs'] ) ) {
-			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', /** Array. @scrutinizer ignore-type */ $settings['ignoreIDs'] ) . '\']';
+			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {
@@ -330,7 +348,7 @@ class PHP_Typography {
 	 * @param \DOMNode $node    The node to replace.
 	 * @param string   $content The HTML fragment used to replace the node.
 	 *
-	 * @return \DOMNode|array An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
+	 * @return \DOMNode[]|\DOMNode An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
 	 */
 	public function replace_node_with_html( \DOMNode $node, $content ) {
 		$result = $node;
@@ -345,8 +363,18 @@ class PHP_Typography {
 
 		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 
+		/**
+		 * Create DOM nodes from HTML fragment.
+		 *
+		 * @var \DOMNode|false $html_fragment
+		 */
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
+			/**
+			 * Import fragment into existing DOM.
+			 *
+			 * @var \DOMNode|false $imported_fragment
+			 */
 			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
 
 			if ( ! empty( $imported_fragment ) ) {
@@ -389,7 +417,7 @@ class PHP_Typography {
 	 */
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
-		if ( ! isset( $this->html5_parser ) ) {
+		if ( null === $this->html5_parser ) {
 			$this->html5_parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		}
 
@@ -402,7 +430,7 @@ class PHP_Typography {
 	 * @return Hyphenator\Cache
 	 */
 	public function get_hyphenator_cache() {
-		if ( ! isset( $this->hyphenator_cache ) ) {
+		if ( null === $this->hyphenator_cache ) {
 			$this->hyphenator_cache = new Hyphenator\Cache();
 		}
 
@@ -414,7 +442,7 @@ class PHP_Typography {
 	 *
 	 * @param Hyphenator\Cache $cache A hyphenator cache instance.
 	 */
-	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ) : void {
 		$this->hyphenator_cache = $cache;
 
 		// Change hyphenator cache for existing token fixes.
@@ -445,7 +473,7 @@ class PHP_Typography {
 		while ( $file ) {
 			// We only want the JSON files.
 			if ( '.json' === \substr( $file, -5 ) ) {
-				$file_content = \file_get_contents( $path . $file );
+				$file_content = (string) \file_get_contents( $path . $file );
 				if ( \preg_match( '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/', $file_content, $matches ) ) {
 					$language_name = \substr( $matches[1], 1, -1 );
 					$language_code = \substr( $file, 0, -5 );

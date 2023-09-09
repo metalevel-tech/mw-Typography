@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,26 +56,26 @@ abstract class Dash_Style {
 	/**
 	 * Available dash styles.
 	 *
-	 * @var array
+	 * @var array<string,string[]>
 	 */
 	private static $styles = [
 		self::TRADITIONAL_US               => [
-			self::_PARENTHETICAL       => U::EM_DASH,
-			self::_PARENTHETICAL_SPACE => U::THIN_SPACE,
-			self::_INTERVAL            => U::EN_DASH,
-			self::_INTERVAL_SPACE      => U::THIN_SPACE,
+			self::PARENTHETICAL       => U::EM_DASH,
+			self::PARENTHETICAL_SPACE => U::THIN_SPACE,
+			self::INTERVAL            => U::EN_DASH,
+			self::INTERVAL_SPACE      => U::THIN_SPACE,
 		],
 		self::INTERNATIONAL                => [
-			self::_PARENTHETICAL       => U::EN_DASH,
-			self::_PARENTHETICAL_SPACE => ' ',
-			self::_INTERVAL            => U::EN_DASH,
-			self::_INTERVAL_SPACE      => U::HAIR_SPACE,
+			self::PARENTHETICAL       => U::EN_DASH,
+			self::PARENTHETICAL_SPACE => ' ',
+			self::INTERVAL            => U::EN_DASH,
+			self::INTERVAL_SPACE      => U::HAIR_SPACE,
 		],
 		self::INTERNATIONAL_NO_HAIR_SPACES => [
-			self::_PARENTHETICAL       => U::EN_DASH,
-			self::_PARENTHETICAL_SPACE => ' ',
-			self::_INTERVAL            => U::EN_DASH,
-			self::_INTERVAL_SPACE      => '',
+			self::PARENTHETICAL       => U::EN_DASH,
+			self::PARENTHETICAL_SPACE => ' ',
+			self::INTERVAL            => U::EN_DASH,
+			self::INTERVAL_SPACE      => '',
 		],
 	];
 
@@ -86,7 +86,7 @@ abstract class Dash_Style {
 	 *
 	 * @var int
 	 */
-	const _INTERVAL = 0;
+	private const INTERVAL = 0;
 
 	/**
 	 * Interval dash space.
@@ -95,7 +95,7 @@ abstract class Dash_Style {
 	 *
 	 * @var int
 	 */
-	const _INTERVAL_SPACE = 1;
+	private const INTERVAL_SPACE = 1;
 
 	/**
 	 * Parenthetical dash.
@@ -104,7 +104,7 @@ abstract class Dash_Style {
 	 *
 	 * @var int
 	 */
-	const _PARENTHETICAL = 2;
+	private const PARENTHETICAL = 2;
 
 	/**
 	 * Parenthetical dash space.
@@ -113,7 +113,7 @@ abstract class Dash_Style {
 	 *
 	 * @var int
 	 */
-	const _PARENTHETICAL_SPACE = 3;
+	private const PARENTHETICAL_SPACE = 3;
 
 	/**
 	 * Creates a new Dashes object in the given style.
@@ -125,13 +125,13 @@ abstract class Dash_Style {
 	 *
 	 * @return Dashes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_dashes( $style, /** Currently unused. @scrutinizer ignore-unused */ Settings $settings ) {
+	public static function get_styled_dashes( $style, Settings $settings ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Dashes(
-				self::$styles[ $style ][ self::_PARENTHETICAL ],
-				self::$styles[ $style ][ self::_PARENTHETICAL_SPACE ],
-				self::$styles[ $style ][ self::_INTERVAL ],
-				self::$styles[ $style ][ self::_INTERVAL_SPACE ]
+				self::$styles[ $style ][ self::PARENTHETICAL ],
+				self::$styles[ $style ][ self::PARENTHETICAL_SPACE ],
+				self::$styles[ $style ][ self::INTERVAL ],
+				self::$styles[ $style ][ self::INTERVAL_SPACE ]
 			);
 		}
 

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2012-2013 Marie Hogebrandt.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
@@ -63,7 +63,7 @@ class Text_Parser {
 	 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 	 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
 	 */
-	const _HTML_SPACING = '
+	private const HTML_SPACING = '
 			(?:
 				(?:										# alpha matches
 					&
@@ -90,7 +90,7 @@ class Text_Parser {
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
-	const _SPACE = '(?:\s|' . self::_HTML_SPACING . ')+'; // required modifiers: x (multiline pattern) i (case insensitive) $utf8.
+	private const SPACE = '(?:\s|' . self::HTML_SPACING . ')+'; // required modifiers: x (multiline pattern) i (case insensitive) $utf8.
 
 	/**
 	 * Find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
@@ -107,7 +107,7 @@ class Text_Parser {
 	 *      hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
 	 *      underscore ("&#95;", "&#x005f;")
 	 */
-	const _HTML_PUNCTUATION = '
+	private const HTML_PUNCTUATION = '
 			(?:
 				(?:										# alpha matches
 					&
@@ -129,7 +129,7 @@ class Text_Parser {
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
-	const _PUNCTUATION = '
+	private const PUNCTUATION = '
 	(?:
 		(?:
 			[^\w\s\&\/\@]  # assume characters that are not word spaces or whitespace are punctuation
@@ -137,7 +137,7 @@ class Text_Parser {
 						   # exclude slash \/as to not include the last slash in a URL
 						   # exclude @ as to keep twitter names together
 			|
-			' . self::_HTML_PUNCTUATION . ' # catch any HTML reps of punctuation
+			' . self::HTML_PUNCTUATION . ' # catch any HTML reps of punctuation
 		)+
 	)
 	';// required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
@@ -150,7 +150,7 @@ class Text_Parser {
 	 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 	 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
 	 */
-	const _HTML_LETTER_CONNECTORS = '
+	private const HTML_LETTER_CONNECTORS = '
 		(?:
 			(?:												# alpha matches
 				&
@@ -182,7 +182,7 @@ class Text_Parser {
 	 *   decimal     48-57 65-90 97-122 192-214,216-246,248-255, 256-383
 	 *   hex         31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
 	 */
-	const _HTML_LETTERS = '
+	private const HTML_LETTERS = '
 		(?:
 			(?:												# alpha matches
 				&
@@ -231,7 +231,7 @@ class Text_Parser {
 		)
 	'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
-	const _WORD = '
+	private const WORD = '
 	(?:
 		(?<![\w\&])	 # negative lookbehind to ensure
 					 #	1) we are proceeded by a non-word-character, and
@@ -239,23 +239,23 @@ class Text_Parser {
 		(?:
 			[\w\-\_\/]
 			|
-			' . self::_HTML_LETTERS . '
+			' . self::HTML_LETTERS . '
 			|
-			' . self::_HTML_LETTER_CONNECTORS . '
+			' . self::HTML_LETTER_CONNECTORS . '
 		)+
 	)
 	'; // required modifiers: x (multiline pattern) u (utf8).
 
 	// Find any text.
-	const _ANY_TEXT = self::_SPACE . '|' . self::_PUNCTUATION . '|' . self::_WORD; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
+	private const ANY_TEXT = self::SPACE . '|' . self::PUNCTUATION . '|' . self::WORD; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 	// Regular expressions.
-	const _RE_ANY_TEXT               = '/(' . self::_ANY_TEXT . ')/Sxiu';
-	const _RE_SPACE                  = '/\A' . self::_SPACE . '\Z/Sxiu';
-	const _RE_PUNCTUATION            = '/\A' . self::_PUNCTUATION . '\Z/Ssxiu';
-	const _RE_WORD                   = '/\A' . self::_WORD . '\Z/Sxu';
-	const _RE_HTML_LETTER_CONNECTORS = '/' . self::_HTML_LETTER_CONNECTORS . '|[0-9\-_&#;\/]/Sxu';
-	const _RE_MAX_STRING_LENGTH      = '/\w{500}/Ss';
+	private const RE_ANY_TEXT               = '/(' . self::ANY_TEXT . ')/Sxiu';
+	private const RE_SPACE                  = '/\A' . self::SPACE . '\Z/Sxiu';
+	private const RE_PUNCTUATION            = '/\A' . self::PUNCTUATION . '\Z/Ssxiu';
+	private const RE_WORD                   = '/\A' . self::WORD . '\Z/Sxu';
+	private const RE_HTML_LETTER_CONNECTORS = '/' . self::HTML_LETTER_CONNECTORS . '|[0-9\-_&#;\/]/Sxu';
+	private const RE_MAX_STRING_LENGTH      = '/\w{500}/Ss';
 
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
@@ -267,9 +267,7 @@ class Text_Parser {
 	/**
 	 * The tokenized text.
 	 *
-	 * @var array $text {
-	 *      @type Text_Parser\Token $index
-	 * }
+	 * @var Token[] $text Numerically indexed tokens.
 	 */
 	private $text = [];
 
@@ -287,24 +285,21 @@ class Text_Parser {
 	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
 	public function load( $raw_text ) {
-		if ( ! \is_string( $raw_text ) ) {
-			return false; // we have an error, abort.
-		}
-
-		// Abort if a simple string exceeds 500 characters (security concern).
-		if ( \preg_match( self::_RE_MAX_STRING_LENGTH, $raw_text ) ) {
+		if ( ! \is_string( $raw_text ) || \preg_match( self::RE_MAX_STRING_LENGTH, $raw_text ) ) {
+			// Abort if called on a non-string or the string exceeds 500 characters
+			// (security concern). TODO: Evaluate limit.
 			return false;
 		}
 
 		// Detect encoding.
 		$str_functions = Strings::functions( $raw_text );
-		if ( empty( $str_functions ) ) {
+		if ( empty( $str_functions ) ) { // TODO: Refactor encoding check.
 			return false; // unknown encoding.
 		}
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( /** RE correct. @scrutinizer ignore-type */ \preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
+		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore WordPress.PHP.DisallowShortTernary.Found -- Ensure array type in case of error.
 
 		// The token array should never be empty.
 		return ! empty( $this->text );
@@ -322,11 +317,11 @@ class Text_Parser {
 		$index  = 0;
 
 		foreach ( $parts as $part ) {
-			if ( \preg_match( self::_RE_SPACE, $part ) ) {
+			if ( \preg_match( self::RE_SPACE, $part ) ) {
 				$tokens[ $index ] = new Token( $part, Token::SPACE );
-			} elseif ( \preg_match( self::_RE_PUNCTUATION, $part ) ) {
+			} elseif ( \preg_match( self::RE_PUNCTUATION, $part ) ) {
 				$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
-			} elseif ( \preg_match( self::_RE_WORD, $part ) ) {
+			} elseif ( \preg_match( self::RE_WORD, $part ) ) {
 				// Make sure that things like email addresses and URLs are not broken up
 				// into words and punctuation not preceeded by an 'other'.
 				self::parse_ambiguous_token( Token::WORD, $part, $tokens, $index );
@@ -345,12 +340,12 @@ class Text_Parser {
 	/**
 	 * Parse ambigious tokens (that may need to be combined with the predecessors).
 	 *
-	 * @param int     $expected_type Either Token::WORD or Token::OTHER.
-	 * @param string  $part          The string fragment to parse.
-	 * @param Token[] $tokens        The token array. Passed by reference.
-	 * @param int     $index         The current index. Passed by reference.
+	 * @param Token::WORD|Token::OTHER $expected_type The expected token type.
+	 * @param string                   $part          The string fragment to parse.
+	 * @param Token[]                  $tokens        The token array. Passed by reference.
+	 * @param int                      $index         The current index. Passed by reference.
 	 */
-	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) {
+	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) : void {
 
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
 		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
@@ -375,10 +370,10 @@ class Text_Parser {
 	/**
 	 * Checks if the predecessor of the current token is of a certain type.
 	 *
-	 * @param  int   $type   A valid token type (e.g. Token::WORD).
-	 * @param  array $tokens An array of tokens.
-	 * @param  int   $index  The current token index.
-	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
+	 * @param  Token[]  $tokens An array of tokens.
+	 * @param  int      $index  The current token index.
+	 * @param  int      $steps  Optional. The number steps to go back for the check. Default 1.
 	 *
 	 * @return bool
 	 */
@@ -389,10 +384,10 @@ class Text_Parser {
 	/**
 	 * Checks if the predecessor of the current token is not of a certain type.
 	 *
-	 * @param  int   $type   A valid token type (e.g. Token::WORD).
-	 * @param  array $tokens An array of tokens.
-	 * @param  int   $index  The current token index.
-	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
+	 * @param  Token[]  $tokens An array of tokens.
+	 * @param  int      $index  The current token index.
+	 * @param  int      $steps  Optional. The number steps to go back for the check. Default 1.
 	 *
 	 * @return bool
 	 */
@@ -432,7 +427,7 @@ class Text_Parser {
 	/**
 	 * Clears the currently set text from the parser.
 	 */
-	public function clear() {
+	public function clear() : void {
 		$this->text = [];
 	}
 
@@ -441,7 +436,7 @@ class Text_Parser {
 	 *
 	 * @param Token[] $tokens An array of tokens.
 	 */
-	public function update( $tokens ) {
+	public function update( $tokens ) : void {
 		foreach ( $tokens as $index => $token ) {
 			$this->text[ $index ] = $this->text[ $index ]->with_value( $token->value );
 		}
@@ -477,9 +472,9 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "word".
 	 *
-	 * @param int $abc   Optional. Handling of all-letter words. Allowed values NO_ALL_LETTERS, ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS. Default ALLOW_ALL_LETTERS.
-	 * @param int $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
-	 * @param int $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
+	 * @param self::*_ALL_LETTERS $abc   Optional. Handling of all-letter words. Allowed values NO_ALL_LETTERS, ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS. Default ALLOW_ALL_LETTERS.
+	 * @param self::*_ALL_CAPS    $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
+	 * @param self::*_COMPOUNDS   $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
 	 *
 	 * @return Token[] An array of numerically indexed tokens.
 	 */
@@ -509,8 +504,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for letters.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS or NO_ALL_LETTERS.
+	 * @param  Token               $token  Required.
+	 * @param  self::*_ALL_LETTERS $policy Either ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS or NO_ALL_LETTERS.
 	 *
 	 * @return bool
 	 */
@@ -522,7 +517,7 @@ class Text_Parser {
 			self::REQUIRE_ALL_LETTERS,
 			self::NO_ALL_LETTERS,
 			function( $value ) {
-				return \preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
+				return \preg_replace( self::RE_HTML_LETTER_CONNECTORS, '', $value );
 			}
 		);
 	}
@@ -530,8 +525,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for all-caps words.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS or NO_ALL_CAPS.
+	 * @param  Token            $token  Required.
+	 * @param  self::*_ALL_CAPS $policy Either ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS or NO_ALL_CAPS.
 	 *
 	 * @return bool
 	 */
@@ -549,8 +544,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for compound words.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS or NO_COMPOUNDS.
+	 * @param  Token             $token  Required.
+	 * @param  self::*_COMPOUNDS $policy Either ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS or NO_COMPOUNDS.
 	 *
 	 * @return bool
 	 */

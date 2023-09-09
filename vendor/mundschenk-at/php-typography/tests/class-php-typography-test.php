@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -440,12 +440,7 @@ class PHP_Typography_Test extends Testcase {
 	 * @covers ::get_language_plugin_list
 	 */
 	public function test_get_language_plugin_list_incorrect_path() {
-		// PHP < 7.0 raises an error instead of throwing an "exception".
-		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expect_warning( \PHPUnit_Framework_Error_Warning::class );
-		} else {
-			$this->expect_warning( \PHPUnit\Framework\Error\Warning::class );
-		}
+		$this->expect_warning( \PHPUnit\Framework\Error\Warning::class );
 
 		$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
 
@@ -576,6 +571,7 @@ class PHP_Typography_Test extends Testcase {
 	 * Test process_textnodes.
 	 *
 	 * @covers ::process_textnodes
+	 * @covers ::process_textnodes_internal
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
@@ -699,12 +695,7 @@ class PHP_Typography_Test extends Testcase {
 		$s = $this->s;
 		$s->set_defaults();
 
-		// PHP < 7.0 raises an error instead of throwing an "exception".
-		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expect_exception( \PHPUnit_Framework_Error::class );
-		} else {
-			$this->expect_exception( \TypeError::class );
-		}
+		$this->expect_exception( \TypeError::class );
 
 		$this->typo->process_textnodes( $html, 'bar', $s );
 	}
@@ -816,7 +807,7 @@ class PHP_Typography_Test extends Testcase {
 	/**
 	 * Provide data for testing handle_parsing_errors.
 	 *
-	 * @return [ $errno, $errstr, $errfile, $errline, $errcontext, $result ]
+	 * @return array{ errno : int, errstr : string, errfile : string, errline : int, errcontext : array, result : bool }
 	 */
 	public function provide_handle_parsing_errors() {
 		return [
@@ -844,14 +835,14 @@ class PHP_Typography_Test extends Testcase {
 	public function test_handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext, $result ) {
 
 		if ( $result ) {
-			$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+			$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile ) );
 		} else {
-			$this->assertFalse( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+			$this->assertFalse( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile ) );
 		}
 
 		// Try again when we are not interested.
 		$old_level = error_reporting( 0 );
-		$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+		$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile ) );
 		error_reporting( $old_level );
 	}
 
@@ -2735,10 +2726,8 @@ class PHP_Typography_Test extends Testcase {
 	public function provide_hyphenate_data() {
 		return [
 			[ 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ],
-			// Not working with new de pattern file: [ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],.
-			[ 'Sauerstofffeldflasche', 'Sauer&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],
-			// Not working with new de pattern file: [ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],.
-			[ 'Sauerstoff-Feldflasche', 'Sauer&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
+			[ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],
+			[ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
 			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ],
 			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ],
@@ -3179,6 +3168,6 @@ class PHP_Typography_Test extends Testcase {
 
 		$reg->shouldReceive( 'update_hyphenator_cache' )->once()->with( $new_cache );
 
-		$this->assertNull( $typo->set_hyphenator_cache( $new_cache ) );
+		$this->assertNull( $typo->set_hyphenator_cache( $new_cache ) ); // @phpstan-ignore-line
 	}
 }
