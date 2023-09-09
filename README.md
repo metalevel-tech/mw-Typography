@@ -24,24 +24,6 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Clear clipboard.** The extension uses an additional JavaScript in order to remove the `&shy;` signs from the text when you copy it. This JavaScript is borrowed from [wp-Typography](https://wordpress.org/plugins/wp-typography/). The current implementation of the [script](/modules) has a bug: When you copy text from `pre` tag, the new line characters are dismissed. The temporal solution is to copy the entire `pre` tag plus small portion of text from any surrounded tag `div`, `p`, etc.
 
-* **Name spaces limitation. Deprecated, since the main Hook is changed from [ParserAfterTidy](https://www.mediawiki.org/wiki/Manual:Hooks/ParserAfterTidy) to [OutputPageBeforeHTML](https://www.mediawiki.org/wiki/Manual:Hooks/OutputPageBeforeHTML)!**
-
-  <s>There is an array that defines the numerical values of the name spaces on which the extension should operate. You can setup the desired values within your `LocalSettings.php`. The default values are:
-
-  ````php
-  $wgTypography['AllowedNameSpaces'] = array('0', '1', '2', '3', '4', '5', '6', '7', '10', '11', '12', '13', '14', '15');
-  ````
-
-  Please do not add MediaWiki's `Special:` pages (NS 8 and 9) to this array, because their processing time is too slow.</s>
-
-* <s>**Component words additional support.** Via the configuration array `$wgTypography['ColonWords']` you can provide a list of  'compound words' (for example that contain `:`, like as `Категория:Файлове`, `Category:Files`) in order to divide them in two parts (by adding a space `:_`). In this way the two parts will be processed properly and will be hyphenated. There is an identical option within the settings of the repository PHP-Typography, but it will add two surrounding spaces to the colon sign `_:_`. By default the current option is disabled. In order to enable it, add a line as the follow in your `LocalSettings.php` file:
-
-   ````php
-   $wgTypography['ColonWords'] = array('Категория:', 'Category:', 'МедияУики:', 'MediaWiki:', 'Extension:');
-   ````
-
-   If you want to use the native PHP-Typography's option read the next section.</s>
-
 * **PHP-Typography settings.** All settings of the main repository PHP-Typography are available via the array `$wgTypography['Settings']` that should be added to your `LocalSettings.php` file in a way as this:
 
   ````php
