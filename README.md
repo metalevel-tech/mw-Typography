@@ -1,6 +1,8 @@
 ![Example 1.](.images/comparison_between_articles_with_and_without_hyphenation.png)
 
-# mw-Typography
+# MediaWiki Extension Typography
+
+***[The extension is tested with MW 1.40](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
 
 MediaWiki Extension that uses the repository [php-typography](https://github.com/mundschenk-at/php-typography) and process the wiki text through it in order to hyphen the text. The first aim is to provide Hyphenation, but all features of the repository PHP-Typography are available.
 
