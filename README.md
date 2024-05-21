@@ -1,8 +1,11 @@
-![Example 1.](.images/comparison_between_articles_with_and_without_hyphenation.png)
 
 # MediaWiki Extension Typography
 
-***[The extension is tested with MW 1.40](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
+![Example 1.](.images/mw-Typography-01.png)
+
+![Example 1.](.images/mw-Typography-02.png)
+
+* ***[The extension is tested with MW 1.40](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
 
 MediaWiki Extension that uses the repository [php-typography](https://github.com/mundschenk-at/php-typography) and process the wiki text through it in order to hyphen the text. The first aim is to provide Hyphenation, but all features of the repository PHP-Typography are available.
 
@@ -14,7 +17,7 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
 
 * **Wiki family support**. The repository [php-typography](https://github.com/mundschenk-at/php-typography) supports over [70 languages](vendor/mundschenk-at/php-typography/src/lang). So the extension has the following options:
 
-  * Autodetect the wiki's language - in this case the extension will detect the wiki's language, and process the text within that wiki by this **single language**. There are some locales limitations of this autodetection - for example the locale `en` will be converted to `en-US`, but such filters are not applied for any other language. I would prefer the other option!
+  * Autodetect the wiki's language - in this case the extension will detect the wiki's language, and process the text within that wiki by this **single language**. There are some locales limitations of this autodetect - for example the locale `en` will be converted to `en-US`, but such filters are not applied for any other language. I would prefer the other option!
 
   * Manual set the wiki's language**s** - with this option you can manually set the wiki's content language. [Or you can set more than one content languages in order to translate your **multi language** wiki's content]. In order to activate this option you need to add a line as the follow in your `LocalSettings.php` file:
 
