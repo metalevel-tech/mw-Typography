@@ -5,7 +5,9 @@
 
 ![Example 1.](.images/mw-Typography-02.png)
 
-* ***[The extension is tested with MW 1.40](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
+* The extension is tested on a MediaWiki Family that supports Bulgarian, Russian and English languages and it works nice - as it is expected. In my opinion, of doctor of engineering science, this is must have feature for each CMS!
+
+* ***[The extension is tested with MW 1.40, 1.41](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
 
 MediaWiki Extension that uses the repository [php-typography](https://github.com/mundschenk-at/php-typography) and process the wiki text through it in order to hyphen the text. The first aim is to provide Hyphenation, but all features of the repository PHP-Typography are available.
 
@@ -44,7 +46,7 @@ MediaWiki Extension that uses the repository [php-typography](https://github.com
       'set_single_character_word_spacing' => false,
   );
   ````
-  
+
   You can read the extension's default values within the beginning of the file [`Typography.hooks.php`](/Typography.hooks.php). You can read about the meaning of each option within the file [`/vendor/mundschenk-at/php-typography/src/class-settings.php`](vendor/mundschenk-at/php-typography/src/class-settings.php).
 
 ## Installation
@@ -110,12 +112,6 @@ MediaWiki version compatibility:
 * I will issue a branch of this extension after each MediaWiki's branch that I'm following on my production or test environment.
 
 * After a branch is issued I do not intent to apply further edits to it, so most recent updates will be available in the master branch of this repository.
-
-## Screen shots and tests
-
-The extension is tested on a MediaWiki Family that supports Bulgarian, Russian and English languages and it works nice - as it is expected. In my opinion, of doctor of engineering science, this is must have feature for each CMS!
-
-![Example 1.](.images/comparison_between_articles_with_and_without_hyphenation.png)
 
 ## Performance
 
