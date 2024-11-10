@@ -7,7 +7,7 @@
 
 * The extension is tested on a MediaWiki Family that supports Bulgarian, Russian and English languages and it works nice - as it is expected. In my opinion, of doctor of engineering science, this is must have feature for each CMS!
 
-* ***[The extension is tested with MW 1.40, 1.41](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
+* ***[The extension is tested with MW 1.40, 1.41, 1.42](https://wiki.metalevel.tech/wiki/Linux_Network_Basics)***
 
 MediaWiki Extension that uses the repository [php-typography](https://github.com/mundschenk-at/php-typography) and process the wiki text through it in order to hyphen the text. The first aim is to provide Hyphenation, but all features of the repository PHP-Typography are available.
 
