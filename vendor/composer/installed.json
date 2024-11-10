@@ -143,6 +143,6 @@
             "install-path": "../mundschenk-at/php-typography"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }
